@@ -1,5 +1,7 @@
 package da.ort.obligatorioErnestoAntunes.modelo;
 
+import da.ort.obligatorioErnestoAntunes.excepciones.ModalidadNoValidaException;
+
 public abstract class Modalidad {
     private String nombre;
 
@@ -18,4 +20,6 @@ public abstract class Modalidad {
             double dividendo,
             double totalApostadoCaballo
     );
+
+    public abstract void validar() throws ModalidadNoValidaException;
 }

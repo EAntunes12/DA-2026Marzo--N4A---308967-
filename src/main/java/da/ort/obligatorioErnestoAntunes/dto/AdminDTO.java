@@ -32,7 +32,7 @@ public class AdminDTO {
         this.nombreCompleto = admin.getNombreCompleto();
     }
 
-      public static List<AdminDTO> fromList(List<Administrador> admins) {
+    public static List<AdminDTO> fromList(List<Administrador> admins) {
         List<AdminDTO> result = new ArrayList<>();
         for (Administrador admin : admins) {
             result.add(new AdminDTO(admin));

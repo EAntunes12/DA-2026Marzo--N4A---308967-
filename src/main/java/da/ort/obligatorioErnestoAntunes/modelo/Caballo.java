@@ -1,5 +1,7 @@
 package da.ort.obligatorioErnestoAntunes.modelo;
 
+import da.ort.obligatorioErnestoAntunes.excepciones.CaballoNoValidoException;
+
 public class Caballo {
     private String nombre;
 
@@ -13,5 +15,11 @@ public class Caballo {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public void validar() throws CaballoNoValidoException{
+        if(nombre == null || nombre.isBlank()){
+            throw new CaballoNoValidoException("El nombre no puede ser vacio");
+        }
     }
 }

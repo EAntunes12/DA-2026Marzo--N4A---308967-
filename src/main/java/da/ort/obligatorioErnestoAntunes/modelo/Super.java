@@ -1,5 +1,7 @@
 package da.ort.obligatorioErnestoAntunes.modelo;
 
+import da.ort.obligatorioErnestoAntunes.excepciones.ModalidadNoValidaException;
+
 public class Super extends Modalidad {
     public Super() {
         super("Super");
@@ -20,5 +22,12 @@ public class Super extends Modalidad {
         }
 
         return monto * dividendo * 4;
+    }
+
+    @Override
+    public void validar() throws ModalidadNoValidaException {
+        if(this.getNombre() == null || this.getNombre().isBlank() || !this.getNombre().equals("Super")){
+            throw new ModalidadNoValidaException("El nombre ingresado no es correcto");
+        }
     }
 }

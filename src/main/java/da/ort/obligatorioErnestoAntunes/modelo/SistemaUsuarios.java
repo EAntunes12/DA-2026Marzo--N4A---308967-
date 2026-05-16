@@ -6,7 +6,7 @@ import java.util.List;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioExistenteException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioInvalidoException;
 
-public class SistemaLogin {
+public class SistemaUsuarios {
 
     List<Usuario> usuarios = new ArrayList<>();
 
@@ -50,7 +50,7 @@ public class SistemaLogin {
         }
     }     
         
-    public void agregar(Usuario u) throws UsuarioInvalidoException, UsuarioExistenteException{
+    public void agregarUsuario(Usuario u) throws UsuarioInvalidoException, UsuarioExistenteException{
         if(u==null){ 
             throw new UsuarioInvalidoException("El usuario es null.");
         }
