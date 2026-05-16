@@ -1,5 +1,7 @@
 package da.ort.obligatorioErnestoAntunes.modelo;
 
+import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioInvalidoException;
+
 public class Usuario {
     private String nombre;
     private String password;
@@ -35,6 +37,17 @@ public class Usuario {
         this.nombreCompleto = nombreCompleto;
     }
 
+    public void validar() throws UsuarioInvalidoException{
+        if(nombre.isBlank() || nombre == null){
+            throw new UsuarioInvalidoException("El nombre no puede ser vacio.");
+        }
+        if(password.isBlank() || password == null){
+            throw new UsuarioInvalidoException("La contraseña no puede ser vacia.");
+        }
+        if(nombreCompleto.isBlank() || nombreCompleto == null){
+            throw new UsuarioInvalidoException("El nombre completo no puede ser vacio.");
+        }
+    }
 
     
 }
