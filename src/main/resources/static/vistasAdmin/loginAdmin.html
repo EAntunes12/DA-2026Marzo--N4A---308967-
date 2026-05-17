@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración</title>
+  <link rel="stylesheet" href="loginAdmin.css" />
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-icon">🐎</div>
+      <h1 class="login-titulo">Panel de Administración</h1>
+      <p class="login-subtitulo">Hipódromo MalaPata — Sistema de Gestión</p>
+
+      <div id="mensajeError" class="error-msg" style="display:none;"></div>
+
+      <div class="campo">
+        <label for="nombre">Nombre de usuario</label>
+        <input type="text" id="nombre" placeholder="Ingrese su nombre de usuario:" />
+      </div>
+
+      <div class="campo">
+        <label for="pass">Contraseña</label>
+        <input type="password" id="pass" placeholder="●●●●●●●●" />
+      </div>
+
+      <button id="btnLogin" class="btn-login">Ingresar al sistema</button>
+
+      <div class="info-box">
+        <div class="info-icon">i</div>
+        <p>Por seguridad, no se permite el ingreso simultáneo con las mismas credenciales desde distintas sesiones.</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import dispatcher from '/CommandDispatcher.js';
+
+    function mostrarError(msg) {
+      const el = document.getElementById('mensajeError');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function ocultarError() {
+      const el = document.getElementById('mensajeError');
+      el.style.display = 'none';
+      el.textContent = '';
+    }
+
+    const view = dispatcher.registerView('loginAdmin', {
+      urlInicio: null,
+      onError: (status, texto) => mostrarError(`Error ${status}: ${texto}`),
+      onException: (msg) => mostrarError(msg)
+    });
+
+    view.handler('accesoPermitido', (url) => {
+      window.location.href = url;
+    });
+
+    dispatcher.startView(view);
+
+    document.getElementById('btnLogin').addEventListener('click', () => {
+      ocultarError();
+      const nombre = document.getElementById('nombre').value;
+      const pass   = document.getElementById('pass').value;
+      dispatcher.submit('/loginAdmin/login', { nombre, pass });
+    });
+  </script>
+</body>
+</html>

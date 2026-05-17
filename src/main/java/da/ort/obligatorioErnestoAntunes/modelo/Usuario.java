@@ -6,11 +6,21 @@ public abstract class Usuario {
     private String nombre;
     private String password;
     private String nombreCompleto;
+    private boolean logueado;
+
+    public boolean isLogueado() {
+        return logueado;
+    }
+
+    public void setLogueado(boolean logueado) {
+        this.logueado = logueado;
+    }
 
     protected Usuario(String nombre, String password, String nombreCompleto) {
         this.nombre = nombre;
         this.password = password;
         this.nombreCompleto = nombreCompleto;
+        this.logueado = false;
     }
 
     public String getNombre() {

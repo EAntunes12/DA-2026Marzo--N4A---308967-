@@ -17,13 +17,16 @@ public class Participacion {
 
     public Participacion(int numeroRegistro, Caballo c) {
         this.numeroRegistro = numeroRegistro;
-        this.dividendo = calcularDividendo();
+        this.dividendo = -1; // Se inicia sin un valor valido
         this.caballo = c;
     }
 
-    private double calcularDividendo() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'calcularDividendo'");
+    public void calcularDividendo(double pozo, double totalCaballo) {
+        if (totalCaballo == 0) {
+            this.dividendo = 0;
+        } else {
+            this.dividendo = pozo / totalCaballo;
+        }
     }
 
     public int getNumeroRegistro() {
@@ -42,12 +45,13 @@ public class Participacion {
         this.dividendo = dividendo;
     }
 
-    public void validar() throws ParticipacionNoValidaException{
-        if(numeroRegistro < 1){
+    public void validar() throws ParticipacionNoValidaException {
+        if (numeroRegistro < 1) {
             throw new ParticipacionNoValidaException("El numero de registro no es valido");
         }
-        if(caballo == null){
+        if (caballo == null) {
             throw new ParticipacionNoValidaException("El caballo asociado no es valido");
         }
     }
+
 }

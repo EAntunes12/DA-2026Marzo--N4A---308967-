@@ -13,6 +13,10 @@ public class SistemaUsuarios {
     private Usuario login(String nombre, String pass) throws UsuarioInvalidoException{
         for (Usuario u : usuarios) {
             if (u.getNombre().equals(nombre) && u.getPassword().equals(pass)) {
+                if(u.isLogueado()){
+                    throw new UsuarioInvalidoException("El usuario ya esta logueado");
+                }
+                u.setLogueado(true);
                 return u;
             }
         }

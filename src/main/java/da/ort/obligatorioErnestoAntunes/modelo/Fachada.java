@@ -20,6 +20,10 @@ public class Fachada {
             this.sistemaUsuarios = new SistemaUsuarios();
         }
 
+        public double getComision(){
+            return sistemaApuestas.getComision();
+        }
+
         public static Fachada getInstancia() {
             if (instancia == null) {
                 instancia = new Fachada();

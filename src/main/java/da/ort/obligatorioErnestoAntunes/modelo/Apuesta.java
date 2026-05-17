@@ -8,6 +8,30 @@ public class Apuesta {
     private Participacion participacion;
     private Modalidad modalidad;    
 
+    public Jugador getJugador() {
+        return jugador;
+    }
+
+    public void setJugador(Jugador jugador) {
+        this.jugador = jugador;
+    }
+
+    public Participacion getParticipacion() {
+        return participacion;
+    }
+
+    public void setParticipacion(Participacion participacion) {
+        this.participacion = participacion;
+    }
+
+    public Modalidad getModalidad() {
+        return modalidad;
+    }
+
+    public void setModalidad(Modalidad modalidad) {
+        this.modalidad = modalidad;
+    }
+
     public Apuesta(double valor, Jugador jugador, Participacion participacion, Modalidad modalidad) {
         this.valor = valor;
         this.jugador = jugador;

@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.cglib.core.Local;
 
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.CarreraException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
 
@@ -86,17 +87,19 @@ public class Carrera {
         }
     }
 
-    public void agregarParticipacion(Participacion p) throws ParticipacionNoValidaException{
-        if (p == null)throw new ParticipacionNoValidaException("La participacion no es valida.");
-        
+    public void agregarParticipacion(Participacion p) throws ParticipacionNoValidaException {
+        if (p == null)
+            throw new ParticipacionNoValidaException("La participacion no es valida.");
+
         p.validar();
         existeParticipacion(p);
 
         participaciones.add(p);
     }
 
-    public void agregarApuesta(Apuesta a) throws ApuestaNoValidaException{
-        if(a == null) throw new ApuestaNoValidaException("La apuesta no es valida.");
+    public void agregarApuesta(Apuesta a) throws ApuestaNoValidaException {
+        if (a == null)
+            throw new ApuestaNoValidaException("La apuesta no es valida.");
 
         a.validar();
         apuestas.add(a);
@@ -118,18 +121,78 @@ public class Carrera {
         }
     }
 
-    public void abrir() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'abrir'");
+    public void abrir() throws CarreraException {
+        if (this.estado != Estado.DEFINIDA) {
+            throw new CarreraException("No se puede abrir la carrera");
+        }
+        this.estado = Estado.ABIERTA;
+        actualizarEstado();
     }
 
-    public void cerrar() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'cerrar'");
+    private void actualizarEstado() {
+        if (this.estado == Estado.CERRADA || this.estado == Estado.FINALIZADA) {
+            return; // capaz que tendria que tirar una excepcion
+        }
+
+        boolean todosValidos = true;
+        for (Participacion p : this.participaciones) {
+            if (!dividendoValido(p)) {
+                todosValidos = false;
+            }
+        }
+
+        if (todosValidos) {
+            this.estado = Estado.ESTABLE;
+        } else {
+            this.estado = Estado.ABIERTA;
+        }
+    }
+
+    public void cerrar() throws CarreraException {
+        if (this.estado != Estado.ESTABLE) {
+            throw new CarreraException("No se puede abrir la carrera");
+        }
+        this.estado = Estado.CERRADA;
+    }
+
+    public int cantApuestasPorParticipacion(Participacion p) {
+        int cant = 0;
+        for (Apuesta a : this.apuestas) {
+            if (a.getParticipacion() == p) {
+                cant++;
+            }
+        }
+        return cant;
+    }
+
+    public double totalApostadoPorCaballo(Participacion p) {
+        double total = 0;
+        for (Apuesta a : this.apuestas) {
+            if (a.getParticipacion() == p) {
+                total += a.getValor();
+            }
+        }
+
+        return total;
+    }
+
+    public boolean dividendoValido(Participacion p) {
+        return p.getDividendo() > 1 && cantApuestasPorParticipacion(p) > 0;
     }
 
     public void recalcularDividendos() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'recalcularDividendos'");
+        double totalCarrera = 0;
+        for (Apuesta a : apuestas) {
+            totalCarrera += a.getValor();
+        }
+
+        double comision = totalCarrera * Fachada.getInstancia().getComision();
+        double pozo = totalCarrera - comision;
+
+        for (Participacion p : participaciones) {
+            double totalCaballo = totalApostadoPorCaballo(p);
+            p.calcularDividendo(pozo, totalCaballo);
+        }
+        actualizarEstado();
     }
 }

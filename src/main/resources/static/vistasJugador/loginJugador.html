@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MalaPATA - Login Jugador</title>
+    <link rel="stylesheet" href="loginJugador.css">
+</head>
+<body>
+    <div class="contenedor-login">
+        <div class="tarjeta-login">
+            <div class="logo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Caballo simplificado -->
+                    <circle cx="35" cy="30" r="15" fill="#FF6B35"/>
+                    <rect x="28" y="42" width="14" height="25" fill="#FF6B35"/>
+                    <circle cx="65" cy="30" r="15" fill="#FFA500"/>
+                    <rect x="58" y="42" width="14" height="25" fill="#FFA500"/>
+                    <polygon points="50,15 55,25 45,25" fill="#FFD700"/>
+                </svg>
+            </div>
+            
+            <h1>MalaPATA</h1>
+            <p class="subtitulo">Zona de jugadores — Hipódromo MalaPata</p>
+            
+            <div id="mensajeError" class="mensaje-error" style="display:none;"></div>
+            
+            <form id="formularioLogin">
+                <div class="grupo-entrada">
+                    <label for="usuario">Nombre de usuario</label>
+                    <input 
+                        type="text" 
+                        id="usuario" 
+                        name="nombre" 
+                        placeholder="Ingrese su nombre de usuario:"
+                        required
+                    >
+                </div>
+                
+                <div class="grupo-entrada">
+                    <label for="contrasena">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="contrasena" 
+                        name="pass" 
+                        placeholder="••••••••"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" id="botonIngresar" class="boton-ingresar">
+                    <span class="icono-boton">➤</span>
+                    <span>Ingresar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import dispatcher from '/CommandDispatcher.js';
+
+        function mostrarError(mensaje) {
+            const elemento = document.getElementById('mensajeError');
+            elemento.textContent = mensaje;
+            elemento.style.display = 'block';
+            setTimeout(() => {
+                elemento.style.display = 'none';
+            }, 5000);
+        }
+
+        function ocultarError() {
+            const elemento = document.getElementById('mensajeError');
+            elemento.style.display = 'none';
+            elemento.textContent = '';
+        }
+
+        const view = dispatcher.registerView('loginJugador', {
+            urlInicio: null,
+            onError: (status, texto) => mostrarError(`Error ${status}: ${texto}`),
+            onException: (msg) => mostrarError(msg)
+        });
+
+        // Manejador para acceso permitido - redirige al tablero
+        view.handler('accesoPermitido', (destino) => {
+            window.location.href = destino;
+        });
+
+        // Registrar el submit del formulario
+        document.getElementById('formularioLogin').addEventListener('submit', (e) => {
+            e.preventDefault();
+            ocultarError();
+            
+            const usuario = document.getElementById('usuario').value;
+            const contrasena = document.getElementById('contrasena').value;
+            
+            dispatcher.submit('/loginJugador/login', {
+                nombre: usuario,
+                pass: contrasena
+            });
+        });
+
+        // Iniciar la vista
+        dispatcher.startView(view);
+    </script>
+</body>
+</html>

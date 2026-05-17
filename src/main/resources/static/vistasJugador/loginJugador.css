@@ -1,0 +1,194 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.contenedor-login {
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tarjeta-login {
+    background: linear-gradient(180deg, #1a2c47 0%, #0f2438 100%);
+    border-radius: 16px;
+    padding: 40px 35px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.15);
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 4px 8px rgba(255, 193, 7, 0.3));
+}
+
+h1 {
+    color: #FFC107;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitulo {
+    color: #9AA5B1;
+    font-size: 13px;
+    margin-bottom: 32px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+#formularioLogin {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.grupo-entrada {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.grupo-entrada label {
+    color: #A8B5C2;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.grupo-entrada input {
+    padding: 12px 16px;
+    background-color: rgba(31, 53, 82, 0.6);
+    border: 1px solid rgba(255, 193, 7, 0.25);
+    border-radius: 8px;
+    color: #E8EEF5;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.grupo-entrada input::placeholder {
+    color: #6B7A8E;
+}
+
+.grupo-entrada input:focus {
+    outline: none;
+    background-color: rgba(31, 53, 82, 0.8);
+    border-color: #FFC107;
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.2);
+}
+
+.boton-ingresar {
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%);
+    color: #0F2438;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    font-family: inherit;
+}
+
+.boton-ingresar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+    background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+}
+
+.boton-ingresar:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(255, 193, 7, 0.3);
+}
+
+.icono-boton {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.mensaje-error {
+    background-color: rgba(231, 76, 60, 0.15);
+    border: 1px solid rgba(231, 76, 60, 0.5);
+    color: #E74C3C;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .tarjeta-login {
+        padding: 30px 25px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .subtitulo {
+        font-size: 12px;
+    }
+
+    .grupo-entrada input {
+        padding: 11px 14px;
+        font-size: 13px;
+    }
+
+    .boton-ingresar {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+}

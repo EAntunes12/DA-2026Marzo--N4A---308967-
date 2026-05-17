@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CaballoNoValidoException;
+import da.ort.obligatorioErnestoAntunes.excepciones.CarreraException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ModalidadNoValidaException;
@@ -45,6 +46,11 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(ApuestaNoValidaException.class)
     public ResponseEntity<String> manejarException(ApuestaNoValidaException ex){
+        return ResponseEntity.status(299).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CarreraException.class)
+    public ResponseEntity<String> manejarException(CarreraException ex){
         return ResponseEntity.status(299).body(ex.getMessage());
     }
 
