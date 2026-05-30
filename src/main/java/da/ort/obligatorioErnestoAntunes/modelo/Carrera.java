@@ -105,8 +105,7 @@ public class Carrera {
         apuestas.add(a);
     }
 
-    public void validar()
-            throws CarreraNoValidaException {
+    public void validar() throws CarreraNoValidaException {
         if (numero <= 0) {
             throw new CarreraNoValidaException(
                     "Numero de carrera invalido.");

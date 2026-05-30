@@ -32,6 +32,7 @@ public class Apuesta {
         this.modalidad = modalidad;
     }
 
+
     public Apuesta(double valor, Jugador jugador, Participacion participacion, Modalidad modalidad) {
         this.valor = valor;
         this.jugador = jugador;

@@ -13,20 +13,16 @@ public class Super extends Modalidad {
     }
 
     @Override
-    public double calcularPago(double monto,
-                               double dividendo,
-                               double totalApostadoCaballo) {
-
+    public double calcularPago(double monto, double dividendo, double totalApostadoCaballo) {
         if (dividendo >= 2) {
             return monto * dividendo * 3;
         }
-
         return monto * dividendo * 4;
     }
 
     @Override
     public void validar() throws ModalidadNoValidaException {
-        if(this.getNombre() == null || this.getNombre().isBlank() || !this.getNombre().equals("Super")){
+        if (this.getNombre() == null || this.getNombre().isBlank() || !this.getNombre().equals("Super")) {
             throw new ModalidadNoValidaException("El nombre ingresado no es correcto");
         }
     }

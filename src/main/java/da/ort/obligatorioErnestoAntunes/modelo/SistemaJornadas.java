@@ -1,5 +1,6 @@
 package da.ort.obligatorioErnestoAntunes.modelo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class SistemaJornadas {
 
     public List<Jornada> getJornadas() {
         return jornadas;
-    };
+    }
 
     public void agregarJornada(Jornada j) throws JornadaNoValidaException {
         if (j == null)
@@ -24,6 +25,9 @@ public class SistemaJornadas {
 
         j.validar();
         jornadas.add(j);
+
+        //Ordeno las jornadas dde mas vieja a mas nueva.
+        jornadas.sort((j1, j2) -> j1.getFecha().compareTo(j2.getFecha())); 
     }
 
     public void agregarCarrera(Carrera c) throws CarreraNoValidaException {
@@ -46,6 +50,39 @@ public class SistemaJornadas {
                         "Ya existe una carrera con ese numero en la jornada.");
             }
         }
+    }
+
+    public Jornada obtenerJornadaActual(){
+        LocalDate hoy = LocalDate.now();
+        Jornada mejor = null;
+
+        for(Jornada j : this.jornadas){
+            if(!j.getFecha().isAfter(hoy)){
+                if(mejor == null || j.getFecha().isAfter(mejor.getFecha())){
+                    mejor = j;
+                }
+            }
+        }
+        return mejor;
+    }
+
+    public Jornada siguienteJornada(Jornada actual){
+        int posicion = this.jornadas.indexOf(actual);
+
+        if(posicion < jornadas.size() - 1){
+            return jornadas.get(posicion + 1);
+        }
+
+        return actual;
+    }
+
+    public Jornada anteriorJornada(Jornada actual) {
+        int pos = jornadas.indexOf(actual);
+        
+        if(pos > 0) {
+            return jornadas.get(pos - 1);
+        }
+        return actual;
     }
 
 }

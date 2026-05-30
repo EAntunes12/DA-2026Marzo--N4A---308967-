@@ -15,11 +15,7 @@ public abstract class Modalidad {
 
     public abstract double calcularCosto(double monto);
 
-    public abstract double calcularPago(
-            double monto,
-            double dividendo,
-            double totalApostadoCaballo
-    );
+    public abstract double calcularPago(double monto, double dividendo, double totalApostadoCaballo);
 
     public abstract void validar() throws ModalidadNoValidaException;
 }

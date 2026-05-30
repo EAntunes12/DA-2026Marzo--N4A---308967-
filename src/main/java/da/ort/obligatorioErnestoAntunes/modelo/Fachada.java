@@ -63,6 +63,22 @@ public class Fachada {
             sistemaJornadas.agregarCarrera(c);
         }
 
+        public void logout(String nombre) throws UsuarioInvalidoException{
+            sistemaUsuarios.logout(nombre);
+        }
+
+        public Jornada obtenerJornadaActual() {
+            return sistemaJornadas.obtenerJornadaActual();
+        }
+
+        public Jornada siguienteJornada(Jornada actual) {
+            return sistemaJornadas.siguienteJornada(actual);
+        }
+
+        public Jornada anteriorJornada(Jornada actual) {
+            return sistemaJornadas.anteriorJornada(actual);
+        }
+
         
 
 }

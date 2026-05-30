@@ -47,7 +47,20 @@ public abstract class Usuario {
         this.nombreCompleto = nombreCompleto;
     }
 
-    public abstract void validar() throws UsuarioInvalidoException;
+    public void validar() throws UsuarioInvalidoException{
+        if(this.getNombre() == null || this.getNombre().isBlank()){
+            throw new UsuarioInvalidoException("El nombre no puede ser vacio");
+        }
+        if(this.getPassword() == null || this.getPassword().isBlank()){
+            throw new UsuarioInvalidoException("La contraseña no puede ser vacia");
+        }
+        if(this.getNombreCompleto() == null || this.getNombreCompleto().isBlank()){
+            throw new UsuarioInvalidoException("El nombre completo no puede ser vacio");
+        }
+        validarSaldo();
+    }
+
+    public abstract void validarSaldo() throws UsuarioInvalidoException;
 
     
 }

@@ -13,19 +13,15 @@ public class Simple extends Modalidad {
     }
 
     @Override
-    public double calcularPago(double monto,
-                               double dividendo,
-                               double totalApostadoCaballo) {
-
+    public double calcularPago(double monto, double dividendo, double totalApostadoCaballo) {
         return monto * dividendo;
     }
 
     @Override
     public void validar() throws ModalidadNoValidaException {
-        if(this.getNombre() == null || this.getNombre().isBlank() || !this.getNombre().equals("Simple")){
+        if (this.getNombre() == null || this.getNombre().isBlank() || !this.getNombre().equals("Simple")) {
             throw new ModalidadNoValidaException("El nombre ingresado no es correcto");
         }
     }
-
 
 }

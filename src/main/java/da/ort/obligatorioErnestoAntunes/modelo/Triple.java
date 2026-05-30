@@ -13,20 +13,16 @@ public class Triple extends Modalidad {
     }
 
     @Override
-    public double calcularPago(double monto,
-                               double dividendo,
-                               double totalApostadoCaballo) {
-
+    public double calcularPago(double monto, double dividendo, double totalApostadoCaballo) {
         if (totalApostadoCaballo >= 100000) {
             return monto * dividendo * 3;
         }
-
         return monto * dividendo * 2;
     }
 
     @Override
     public void validar() throws ModalidadNoValidaException {
-        if(this.getNombre() == null || this.getNombre().isBlank() || !this.getNombre().equals("Triple")){
+        if (this.getNombre() == null || this.getNombre().isBlank() || !this.getNombre().equals("Triple")) {
             throw new ModalidadNoValidaException("El nombre ingresado no es correcto");
         }
     }

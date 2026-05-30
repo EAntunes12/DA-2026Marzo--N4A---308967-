@@ -16,7 +16,11 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/loginJugador")
 public class PresentadorLoginJugador {
-    Fachada fachada = Fachada.getInstancia();
+    private Fachada fachada;
+
+    public PresentadorLoginJugador(Fachada fachada) {
+        this.fachada = fachada;
+    }
 
     @PostMapping("/login")
     public Commands login(HttpSession session, @RequestParam String nombre, @RequestParam String pass) throws UsuarioInvalidoException{

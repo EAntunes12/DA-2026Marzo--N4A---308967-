@@ -64,4 +64,25 @@ public class SistemaUsuarios {
 
         usuarios.add(u);
     }
+
+    public void logout(String nombre) throws UsuarioInvalidoException {
+        Usuario usuario = buscarUsuario(nombre);
+        if (usuario == null) {
+            throw new UsuarioInvalidoException("El usuario no existe.");
+        }
+        if (!usuario.isLogueado()) {
+            throw new UsuarioInvalidoException("El usuario no está logueado.");
+        }
+        usuario.setLogueado(false);
+    }
+
+    private Usuario buscarUsuario(String nombre){
+        for(Usuario u : this.usuarios){
+            if(u.getNombre().equals(nombre)){
+                return u;
+            }
+        }
+
+        return null;
+    }
 }

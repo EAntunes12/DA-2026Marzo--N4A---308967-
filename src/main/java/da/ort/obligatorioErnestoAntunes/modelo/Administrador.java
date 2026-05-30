@@ -9,17 +9,10 @@ public class Administrador extends Usuario {
     }
 
     @Override
-    public void validar() throws UsuarioInvalidoException {
-        if(this.getNombre() == null || this.getNombre().isBlank()){
-            throw new UsuarioInvalidoException("El nombre no puede ser vacio");
-        }
-        if(this.getPassword() == null || this.getPassword().isBlank()){
-            throw new UsuarioInvalidoException("La contraseña no puede ser vacia");
-        }
-        if(this.getNombreCompleto() == null || this.getNombreCompleto().isBlank()){
-            throw new UsuarioInvalidoException("El nombre completo no puede ser vacio");
-        }
+    public void validarSaldo() throws UsuarioInvalidoException {
+        //El admin no tiene saldo.
     }
+
 
     
 }
