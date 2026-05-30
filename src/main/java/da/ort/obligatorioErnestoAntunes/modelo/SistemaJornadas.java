@@ -4,16 +4,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import da.ort.obligatorioErnestoAntunes.dto.ApuestaDTO;
+import da.ort.obligatorioErnestoAntunes.dto.CarreraDTO;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
 
 public class SistemaJornadas {
     List<Jornada> jornadas = new ArrayList<>();
-    List<Carrera> carreras = new ArrayList<>();
-
-    public List<Carrera> getCarreras() {
-        return carreras;
-    }
+    
 
     public List<Jornada> getJornadas() {
         return jornadas;
@@ -28,28 +26,6 @@ public class SistemaJornadas {
 
         //Ordeno las jornadas dde mas vieja a mas nueva.
         jornadas.sort((j1, j2) -> j1.getFecha().compareTo(j2.getFecha())); 
-    }
-
-    public void agregarCarrera(Carrera c) throws CarreraNoValidaException {
-        if (c == null)
-            throw new CarreraNoValidaException("La carrera no es valida");
-
-        c.validar();
-        existeCarrera(c);
-
-        carreras.add(c);
-    }
-
-    private void existeCarrera(Carrera c) throws CarreraNoValidaException {
-        for (Carrera carrera : carreras) {
-            boolean mismoNumero = carrera.getNumero() == c.getNumero();
-            boolean mismaFecha = carrera.getFecha()
-                    .equals(c.getFecha());
-            if (mismoNumero && mismaFecha) {
-                throw new CarreraNoValidaException(
-                        "Ya existe una carrera con ese numero en la jornada.");
-            }
-        }
     }
 
     public Jornada obtenerJornadaActual(){
@@ -83,6 +59,38 @@ public class SistemaJornadas {
             return jornadas.get(pos - 1);
         }
         return actual;
+    }
+
+    public List<Carrera> getCarrerasDisponibles(){
+        List<Carrera> listaRet = new ArrayList<>();
+
+        for(Jornada j : this.jornadas){
+            listaRet.addAll(j.getCarrerasDisponibles());            
+        }
+
+        return listaRet;
+    }
+
+    public List<Apuesta> getTodasLasApuestas(){
+        List<Apuesta> listaRet = new ArrayList<>();
+
+        for(Jornada j : this.jornadas){
+            listaRet.addAll(j.getApuestas());
+        }
+
+        return listaRet;
+    }
+
+    public List<Apuesta> getApuestasPorJugador(String jugador){
+        List<Apuesta> listaRet = new ArrayList<>();
+        List<Apuesta> apuestas = getTodasLasApuestas();
+
+        for(Apuesta a : apuestas){
+            if(a.getJugador().getNombre().equals(jugador)){
+                listaRet.add(a);
+            }
+        }
+        return listaRet;
     }
 
 }

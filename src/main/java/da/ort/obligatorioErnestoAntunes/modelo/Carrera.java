@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.cglib.core.Local;
 
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
-import da.ort.obligatorioErnestoAntunes.excepciones.CarreraException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
 
@@ -29,8 +28,7 @@ public class Carrera {
         return participaciones;
     }
 
-    public Carrera(int numero, String nombre, LocalDate fecha) {
-        this.numero = numero;
+    public Carrera( String nombre, LocalDate fecha) {
         this.nombre = nombre;
         this.ganador = null;
         this.fecha = fecha;
@@ -120,9 +118,9 @@ public class Carrera {
         }
     }
 
-    public void abrir() throws CarreraException {
+    public void abrir() throws CarreraNoValidaException {
         if (this.estado != Estado.DEFINIDA) {
-            throw new CarreraException("No se puede abrir la carrera");
+            throw new CarreraNoValidaException("No se puede abrir la carrera");
         }
         this.estado = Estado.ABIERTA;
         actualizarEstado();
@@ -147,9 +145,9 @@ public class Carrera {
         }
     }
 
-    public void cerrar() throws CarreraException {
+    public void cerrar() throws CarreraNoValidaException {
         if (this.estado != Estado.ESTABLE) {
-            throw new CarreraException("No se puede abrir la carrera");
+            throw new CarreraNoValidaException("No se puede abrir la carrera");
         }
         this.estado = Estado.CERRADA;
     }
@@ -193,5 +191,9 @@ public class Carrera {
             p.calcularDividendo(pozo, totalCaballo);
         }
         actualizarEstado();
+    }
+
+    public boolean sePuedeApostar(){
+        return this.estado == Estado.ABIERTA || this.estado == Estado.ESTABLE;
     }
 }

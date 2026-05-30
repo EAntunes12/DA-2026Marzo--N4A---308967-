@@ -3,6 +3,10 @@ package da.ort.obligatorioErnestoAntunes.datosPrueba;
 import java.time.LocalDate;
 
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.CaballoNoValidoException;
+import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.ModalidadNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioExistenteException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioInvalidoException;
@@ -181,7 +185,7 @@ public class DatosPrueba {
     //------------------------------------------
 
     private static void cargarModalidades()
-            throws Exception {
+            throws ModalidadNoValidaException {
 
         simple = new Simple();
 
@@ -199,7 +203,7 @@ public class DatosPrueba {
     //------------------------------------------
 
     private static void cargarCaballos()
-            throws Exception {
+            throws CaballoNoValidoException {
 
         c1 = new Caballo("Relampago");
         c2 = new Caballo("Trueno");
@@ -221,7 +225,7 @@ public class DatosPrueba {
     //------------------------------------------
 
     private static void cargarJornadas()
-            throws Exception {
+            throws JornadaNoValidaException {
 
         jornadaHoy =
                 new Jornada(LocalDate.now());
@@ -242,29 +246,26 @@ public class DatosPrueba {
     }
 
     //------------------------------------------
-    // 3 CARRERAS HOY
-    //------------------------------------------
+        // 3 CARRERAS HOY
+        //------------------------------------------
 
-    private static void cargarCarrerasHoy()
-            throws Exception {
+        private static void cargarCarrerasHoy()
+                throws CarreraNoValidaException, ParticipacionNoValidaException {
 
         Carrera carrera1 =
                 new Carrera(
-                        1,
                         "Clasico Primavera",
                         LocalDate.now()
                 );
 
         Carrera carrera2 =
                 new Carrera(
-                        2,
                         "Gran Derby",
                         LocalDate.now()
                 );
 
         Carrera carrera3 =
                 new Carrera(
-                        3,
                         "Copa Hipodromo",
                         LocalDate.now()
                 );
@@ -290,28 +291,29 @@ public class DatosPrueba {
                 c6
         );
 
-        f.agregarCarrera(carrera1);
-        f.agregarCarrera(carrera2);
-        f.agregarCarrera(carrera3);
-    }
 
-    //------------------------------------------
-    // CARRERAS PASADAS
-    //------------------------------------------
+        carrera1.abrir();
+        carrera2.abrir();
 
-    private static void cargarCarrerasPasadas()
-            throws Exception {
+        jornadaHoy.agregarCarrera(carrera1);
+        jornadaHoy.agregarCarrera(carrera2);
+        jornadaHoy.agregarCarrera(carrera3);
+        }
+        //------------------------------------------
+        // CARRERAS PASADAS
+        //------------------------------------------
+
+        private static void cargarCarrerasPasadas()
+                throws CarreraNoValidaException, ParticipacionNoValidaException, ApuestaNoValidaException {
 
         Carrera carrera4 =
                 new Carrera(
-                        1,
                         "Clasico Otono",
                         LocalDate.now().minusWeeks(1)
                 );
 
         Carrera carrera5 =
                 new Carrera(
-                        2,
                         "Copa Invierno",
                         LocalDate.now().minusWeeks(1)
                 );
@@ -334,26 +336,23 @@ public class DatosPrueba {
         carrera5.abrir();
 
         generarApuestas(carrera4);
-
         generarApuestas(carrera5);
 
         carrera4.cerrar();
         carrera5.cerrar();
 
-        f.agregarCarrera(carrera4);
-        f.agregarCarrera(carrera5);
-    }
+        jornadaPasada.agregarCarrera(carrera4);
+        jornadaPasada.agregarCarrera(carrera5);
+        }
+        //------------------------------------------
+        // CARRERA FUTURA
+        //------------------------------------------
 
-    //------------------------------------------
-    // CARRERA FUTURA
-    //------------------------------------------
-
-    private static void cargarCarreraFutura()
-            throws Exception {
+        private static void cargarCarreraFutura()
+                throws CarreraNoValidaException, ParticipacionNoValidaException {
 
         Carrera carrera6 =
                 new Carrera(
-                        1,
                         "Copa Futuro",
                         LocalDate.now().plusWeeks(1)
                 );
@@ -365,9 +364,8 @@ public class DatosPrueba {
                 c6
         );
 
-        f.agregarCarrera(carrera6);
-    }
-
+        jornadaFutura.agregarCarrera(carrera6);
+        }
     //------------------------------------------
     // PARTICIPANTES
     //------------------------------------------

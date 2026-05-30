@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/panelControlAdmin")
+@RequestMapping("/tableroAdmin")
 @Scope("session")
-public class PresentadorPanelControlAdmin {
+public class PresentadorTableroAdmin {
     private Fachada fachada;
     private Jornada jornadaActual;
 
-    public PresentadorPanelControlAdmin(Fachada fachada){
+    public PresentadorTableroAdmin(Fachada fachada){
         this.fachada = fachada;
     }
 
