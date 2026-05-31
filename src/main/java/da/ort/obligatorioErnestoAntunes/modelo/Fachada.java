@@ -1,9 +1,9 @@
 package da.ort.obligatorioErnestoAntunes.modelo;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import da.ort.obligatorioErnestoAntunes.dto.ApuestaDTO;
-import da.ort.obligatorioErnestoAntunes.dto.CarreraDTO;
+import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CaballoNoValidoException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
@@ -91,8 +91,16 @@ public class Fachada {
             return sistemaJornadas.getTodasLasApuestas();
         }
 
-        public List<Apuesta> getApuestasPorJugador(String jugador) {
+        public List<Apuesta> getApuestasPorJugador(String jugador){
             return sistemaJornadas.getApuestasPorJugador(jugador);
+        }
+
+        public List<Carrera> getCarrerasFinalizadasPorJornada(LocalDate fecha){
+            return sistemaJornadas.getCarrerasFinalizadasPorJornada(fecha);
+        }
+
+        public List<Carrera> getCarrerasDisponiblesPorJornada(LocalDate fecha){
+            return sistemaJornadas.getCarrerasDisponiblesPorJornada(fecha);
         }
           
 

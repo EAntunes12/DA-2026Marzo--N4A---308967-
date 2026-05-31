@@ -2,6 +2,7 @@ package da.ort.obligatorioErnestoAntunes.modelo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
@@ -28,8 +29,7 @@ public class Jornada {
     }
 
     public void agregarCarrera(Carrera c) throws CarreraNoValidaException {
-        if (c == null)
-            throw new CarreraNoValidaException("La carrera no es valida");
+        if (c == null) throw new CarreraNoValidaException("La carrera no es valida");
 
         c.setNumero(carreras.size() + 1);
         c.validar();
@@ -41,11 +41,10 @@ public class Jornada {
     private void existeCarrera(Carrera c) throws CarreraNoValidaException {
         for (Carrera carrera : carreras) {
             boolean mismoNumero = carrera.getNumero() == c.getNumero();
-            boolean mismaFecha = carrera.getFecha()
-                    .equals(c.getFecha());
+            boolean mismaFecha = carrera.getFecha().equals(c.getFecha());
+
             if (mismoNumero && mismaFecha) {
-                throw new CarreraNoValidaException(
-                        "Ya existe una carrera con ese numero en la jornada.");
+                throw new CarreraNoValidaException("Ya existe una carrera con ese numero en la jornada.");
             }
         }
     }
@@ -73,6 +72,30 @@ public class Jornada {
 
         for(Carrera c : this.carreras){
             c.getApuestas();
+        }
+
+        return listaRet;
+    }
+
+    public List<Carrera> getCarrerasNoFinalizadas() {
+        List<Carrera> listaRet = new ArrayList<>();
+
+        for(Carrera c : this.carreras){
+            if(!c.estaFinalizada()){
+                listaRet.add(c);
+            }
+        }
+
+        return listaRet;
+    }
+
+    public List<Carrera> getCarrerasFinalizadas() {
+        List<Carrera> listaRet = new ArrayList<>();
+
+        for(Carrera c : this.carreras){
+            if(c.estaFinalizada()){
+                listaRet.add(c);
+            }
         }
 
         return listaRet;

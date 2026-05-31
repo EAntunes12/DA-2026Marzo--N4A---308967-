@@ -11,8 +11,12 @@ import da.ort.obligatorioErnestoAntunes.dto.AdminDTO;
 import da.ort.obligatorioErnestoAntunes.dto.ApuestaDTO;
 import da.ort.obligatorioErnestoAntunes.dto.CarreraDTO;
 import da.ort.obligatorioErnestoAntunes.dto.JugadorDTO;
+import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioInvalidoException;
 import da.ort.obligatorioErnestoAntunes.modelo.Fachada;
 import da.ort.obligatorioErnestoAntunes.modelo.Jugador;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/tableroJugador")
@@ -26,7 +30,7 @@ public class PresentadorTableroJugador {
     }
 
     @PostMapping("/vistaConectada")
-    public Commands vistaConectada(@SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO){
+    public Commands vistaConectada(@SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO) {
         if(jugadorDTO != null){
             this.jugadorDTO = jugadorDTO;
 
@@ -35,9 +39,16 @@ public class PresentadorTableroJugador {
         }
         return Commands.create(accesoNoPermitido());
     }
+
+    @PostMapping("/logout")
+    public Commands logout(HttpSession session) throws UsuarioInvalidoException{
+        fachada.logout(((AdminDTO)session.getAttribute("jugador")).getNombre());
+        session.invalidate();
+        return Commands.create(accesoNoPermitido());
+    }
     
 
-    private Command apuestasJugador() {
+    private Command apuestasJugador(){
         return new Command("Apuestas del jugador", ApuestaDTO.fromList(fachada.getApuestasPorJugador(jugadorDTO.getNombre())));
     }
 
@@ -45,7 +56,7 @@ public class PresentadorTableroJugador {
         return new Command("Modalidades de apuesta", fachada.getModalidades());
     }
 
-    private Command carrerasDisponibles() {
+    private Command carrerasDisponibles(){
         return new Command("Carreras disponibles", CarreraDTO.fromList(fachada.getCarrerasDisponibles()));
     }
 

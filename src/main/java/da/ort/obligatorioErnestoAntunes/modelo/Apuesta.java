@@ -1,12 +1,15 @@
 package da.ort.obligatorioErnestoAntunes.modelo;
 
+import java.time.LocalDate;
+
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 
 public class Apuesta {
     private double valor;
     private Jugador jugador;
     private Participacion participacion;
-    private Modalidad modalidad;    
+    private Modalidad modalidad;  
+    private LocalDate fecha;  
 
     public Jugador getJugador() {
         return jugador;
@@ -38,6 +41,7 @@ public class Apuesta {
         this.jugador = jugador;
         this.participacion = participacion;
         this.modalidad = modalidad;
+        this.fecha = LocalDate.now();
     }
 
     public double getValor() {
@@ -61,5 +65,13 @@ public class Apuesta {
         if(modalidad == null){
             throw new ApuestaNoValidaException("La modalidad no puede ser vacia");
         }
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 }

@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import da.ort.obligatorioErnestoAntunes.dto.AdminDTO;
+import da.ort.obligatorioErnestoAntunes.dto.CarreraDTO;
 import da.ort.obligatorioErnestoAntunes.dto.JornadaDTO;
+import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioInvalidoException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,30 +32,31 @@ public class PresentadorTableroAdmin {
 
 
     @PostMapping("/vistaConectada")
-    public Commands vistaConectada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) {
+    public Commands vistaConectada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
         if(adminDTO != null){
             if(jornadaActual == null){
                 jornadaActual = fachada.obtenerJornadaActual();
             } 
-            return Commands.create(/*comandos para armar el tablero */);
+            return Commands.create(carrerasFinalizadas(), proximasCarreras());
         }
         return Commands.create(accesoNoPermitido());
     }
-    
+
+
     @PostMapping("/siguienteJornada")
-    public Commands siguienteJornada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO){
+    public Commands siguienteJornada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
         if(adminDTO != null){
             jornadaActual = fachada.siguienteJornada(jornadaActual);
-            return Commands.create(/*comandos para armar el tablero */);
+            return Commands.create(carrerasFinalizadas(), proximasCarreras());
         }
         return Commands.create(accesoNoPermitido());
     }
 
     @PostMapping("/anteriorJornada")
-    public Commands anteriorJornada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO){
+    public Commands anteriorJornada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
         if(adminDTO != null){
             jornadaActual = fachada.anteriorJornada(jornadaActual);
-            return Commands.create(/*comandos para armar el tablero */);
+            return Commands.create(carrerasFinalizadas(), proximasCarreras());
         }
         return Commands.create(accesoNoPermitido());
     }
@@ -69,6 +73,20 @@ public class PresentadorTableroAdmin {
     private Command accesoNoPermitido() {
        return new Command("accesoNoPermitido", "loginAdmin.html");
     }
+
+    private Command proximasCarreras() throws JornadaNoValidaException{
+        if(jornadaActual == null) throw new JornadaNoValidaException("La jornada no existe"); //en teoria nunca deberia pasar que no haya una jornada pero lo dejo por las dudas
+
+        return new Command("Proximas carreras", CarreraDTO.fromList(fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha())));
+    }
+
+
+    private Command carrerasFinalizadas() throws JornadaNoValidaException{
+        if(jornadaActual == null) throw new JornadaNoValidaException("La jornada no existe"); //lo mismo
+
+        return new Command("Carreras finalizadas", CarreraDTO.fromList(fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha())));
+    }
+
 
     //comando temporal para debuggar
     private Command mostrarJornada(){

@@ -6,6 +6,7 @@ import java.util.List;
 
 import da.ort.obligatorioErnestoAntunes.dto.ApuestaDTO;
 import da.ort.obligatorioErnestoAntunes.dto.CarreraDTO;
+import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
 
@@ -18,8 +19,7 @@ public class SistemaJornadas {
     }
 
     public void agregarJornada(Jornada j) throws JornadaNoValidaException {
-        if (j == null)
-            throw new JornadaNoValidaException("La jornada no es valida.");
+        if (j == null) throw new JornadaNoValidaException("La jornada no es valida.");
 
         j.validar();
         jornadas.add(j);
@@ -86,11 +86,37 @@ public class SistemaJornadas {
         List<Apuesta> apuestas = getTodasLasApuestas();
 
         for(Apuesta a : apuestas){
-            if(a.getJugador().getNombre().equals(jugador)){
+            if(a.getJugador().getNombre().equalsIgnoreCase(jugador)){
                 listaRet.add(a);
             }
         }
+
+        listaRet.sort((a1, a2) -> a1.getFecha().compareTo(a2.getFecha()));
         return listaRet;
+    }
+
+    public List<Carrera> getCarrerasFinalizadasPorJornada(LocalDate fecha){
+        List<Carrera> carreras = new ArrayList<>();
+
+        for(Jornada j : jornadas){
+            if(j.getFecha().equals(fecha)){
+                carreras.addAll(j.getCarrerasFinalizadas());
+            }            
+        }
+        return carreras;       
+
+    }
+
+    public List<Carrera> getCarrerasDisponiblesPorJornada(LocalDate fecha){
+        List<Carrera> carreras = new ArrayList<>();
+
+        for(Jornada j : jornadas){
+            if(j.getFecha().equals(fecha)){
+                carreras.addAll(j.getCarrerasNoFinalizadas());                
+            }
+        }
+
+        return carreras;
     }
 
 }

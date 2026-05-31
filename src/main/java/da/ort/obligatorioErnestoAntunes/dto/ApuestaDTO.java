@@ -1,5 +1,6 @@
 package da.ort.obligatorioErnestoAntunes.dto;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,14 @@ public class ApuestaDTO {
     private String jugador;
     private Participacion participacion;
     private Modalidad modalidad;
+    private LocalDate fecha;
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
     public double getValor() {
         return valor;
     }
@@ -45,6 +54,7 @@ public class ApuestaDTO {
         this.jugador = a.getJugador().getNombre();
         this.participacion = a.getParticipacion();
         this.modalidad = a.getModalidad();
+        this.fecha = a.getFecha();
     }
 
     public static List<ApuestaDTO> fromList(List<Apuesta> apuestas) {

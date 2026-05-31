@@ -196,4 +196,8 @@ public class Carrera {
     public boolean sePuedeApostar(){
         return this.estado == Estado.ABIERTA || this.estado == Estado.ESTABLE;
     }
+
+    public boolean estaFinalizada() {
+        return this.estado == Estado.FINALIZADA;
+    }
 }
