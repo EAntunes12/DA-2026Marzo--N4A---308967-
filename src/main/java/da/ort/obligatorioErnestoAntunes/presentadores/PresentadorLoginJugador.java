@@ -30,6 +30,6 @@ public class PresentadorLoginJugador {
     }
 
     private Command accesoPermitido(){
-        return new Command("accesoPermitido", "tablero.html"); //tablero.html en realidad es la vista a la que tenga que mandar al jugador una vez que se loguea.
+        return new Command("accesoPermitido", "tableroJugador.html"); //tablero.html en realidad es la vista a la que tenga que mandar al jugador una vez que se loguea.
     }
 }

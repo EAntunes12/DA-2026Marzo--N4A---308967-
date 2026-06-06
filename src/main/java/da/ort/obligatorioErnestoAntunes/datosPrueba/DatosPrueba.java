@@ -397,7 +397,7 @@ public class DatosPrueba {
 
     private static void generarApuestas(
             Carrera carrera
-    ) throws ApuestaNoValidaException{
+    ) throws ApuestaNoValidaException, CarreraNoValidaException{
 
         Random random = new Random();
 

@@ -6,6 +6,7 @@ import da.ort.obligatorioErnestoAntunes.modelo.Jornada;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
@@ -33,7 +34,7 @@ public class PresentadorTableroAdmin {
 
     @PostMapping("/vistaConectada")
     public Commands vistaConectada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
-        if(adminDTO != null){
+        if(adminDTO != null){            
             if(jornadaActual == null){
                 jornadaActual = fachada.obtenerJornadaActual();
             } 
@@ -62,14 +63,29 @@ public class PresentadorTableroAdmin {
     }
 
 
+    @PostMapping("/gestionarCarrera")
+    public Commands gestionarCarrera(@RequestParam CarreraDTO carrera, @SessionAttribute(name="administrador",required=false) AdminDTO adminDTO, HttpSession session){
+        if(adminDTO != null){
+            session.setAttribute("carreraSeleccionada", carrera);
+            return Commands.create(vistaGestionarCarrera());
+        }
+        return Commands.create(accesoNoPermitido());
+    }
 
+    
+    
     @PostMapping("/logout")
     public Commands logout(HttpSession session) throws UsuarioInvalidoException{
         fachada.logout(((AdminDTO)session.getAttribute("administrador")).getNombre());
         session.invalidate();
         return Commands.create(accesoNoPermitido());
     }
+    
+    private Command vistaGestionarCarrera() {
+        return new Command("Gestionar carrera", "gestionarCarrera.html");
+    }
 
+    
     private Command accesoNoPermitido() {
        return new Command("accesoNoPermitido", "loginAdmin.html");
     }

@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.springframework.cglib.core.Local;
 
+import da.ort.obligatorioErnestoAntunes.estado.Definida;
+import da.ort.obligatorioErnestoAntunes.estado.EstadoCarrera;
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
@@ -16,7 +18,7 @@ public class Carrera {
     private String nombre;
     private Participacion ganador;
     private LocalDate fecha;
-    private Estado estado;
+    private EstadoCarrera estado;
     private List<Participacion> participaciones;
     private List<Apuesta> apuestas;
 
@@ -32,7 +34,7 @@ public class Carrera {
         this.nombre = nombre;
         this.ganador = null;
         this.fecha = fecha;
-        this.estado = Estado.DEFINIDA;
+        this.estado = new Definida();
         this.participaciones = new ArrayList<>();
         this.apuestas = new ArrayList<>();
     }
@@ -69,11 +71,11 @@ public class Carrera {
         this.fecha = fecha;
     }
 
-    public Estado getEstado() {
+    public EstadoCarrera getEstado() {
         return estado;
     }
 
-    public void setEstado(Estado estado) {
+    public void setEstado(EstadoCarrera estado) {
         this.estado = estado;
     }
 
@@ -119,37 +121,36 @@ public class Carrera {
     }
 
     public void abrir() throws CarreraNoValidaException {
-        if (this.estado != Estado.DEFINIDA) {
-            throw new CarreraNoValidaException("No se puede abrir la carrera");
-        }
-        this.estado = Estado.ABIERTA;
-        actualizarEstado();
+        estado.abrir(this);
     }
 
-    private void actualizarEstado() {
-        if (this.estado == Estado.CERRADA || this.estado == Estado.FINALIZADA) {
-            return; // capaz que tendria que tirar una excepcion
-        }
-
+    private void actualizarEstado() throws CarreraNoValidaException{
         boolean todosValidos = true;
-        for (Participacion p : this.participaciones) {
+
+        for (Participacion p : participaciones) {
             if (!dividendoValido(p)) {
                 todosValidos = false;
+                break;
             }
         }
 
         if (todosValidos) {
-            this.estado = Estado.ESTABLE;
+            estado.hacerEstable(this);
         } else {
-            this.estado = Estado.ABIERTA;
+            estado.abrir(this);
         }
     }
 
     public void cerrar() throws CarreraNoValidaException {
-        if (this.estado != Estado.ESTABLE) {
-            throw new CarreraNoValidaException("No se puede abrir la carrera");
-        }
-        this.estado = Estado.CERRADA;
+        estado.cerrar(this);
+    }
+
+    public void hacerEstable() throws CarreraNoValidaException {
+        estado.hacerEstable(this);
+    }
+
+    public void finalizar() throws CarreraNoValidaException {
+        estado.finalizar(this);
     }
 
     public int cantApuestasPorParticipacion(Participacion p) {
@@ -177,7 +178,7 @@ public class Carrera {
         return p.getDividendo() > 1 && cantApuestasPorParticipacion(p) > 0;
     }
 
-    public void recalcularDividendos() {
+    public void recalcularDividendos() throws CarreraNoValidaException{
         double totalCarrera = 0;
         for (Apuesta a : apuestas) {
             totalCarrera += a.getValor();
@@ -194,10 +195,10 @@ public class Carrera {
     }
 
     public boolean sePuedeApostar(){
-        return this.estado == Estado.ABIERTA || this.estado == Estado.ESTABLE;
+        return estado.sePuedeApostar();
     }
 
     public boolean estaFinalizada() {
-        return this.estado == Estado.FINALIZADA;
+        return estado.esFinalizada();
     }
 }
