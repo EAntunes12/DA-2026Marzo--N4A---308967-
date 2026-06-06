@@ -30,11 +30,12 @@ public class Abierta implements EstadoCarrera{
         return "Abierta";
     }
 
+    /* 
     @Override
     public void hacerEstable(Carrera carrera) throws CarreraNoValidaException {
         carrera.setEstado(new Estable());
     }
-
+*/
     @Override
     public void finalizar(Carrera carrera) throws CarreraNoValidaException {
         throw new CarreraNoValidaException("La carrera debe estar cerrada para finalizar.");

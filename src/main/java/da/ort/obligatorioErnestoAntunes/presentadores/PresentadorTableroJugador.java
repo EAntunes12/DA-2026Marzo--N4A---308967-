@@ -34,7 +34,7 @@ public class PresentadorTableroJugador {
         if(jugadorDTO != null){
             this.jugadorDTO = jugadorDTO;
 
-            //aca voy a tener que agregar mas cosas a medida qeu avancemos en la clase-.
+            //TODO aca voy a tener que agregar mas cosas a medida qeu avancemos en la clase-.
             return Commands.create(datosJugador(), carrerasDisponibles(), tiposDeApuesta(), apuestasJugador());
         }
         return Commands.create(accesoNoPermitido());
@@ -61,7 +61,7 @@ public class PresentadorTableroJugador {
     }
 
     private Command datosJugador() {
-        // falta mostrar saldo actual, monto total apostado y monto total ganado.
+        //TODO falta mostrar saldo actual, monto total apostado y monto total ganado.
         return new Command("Datos del jugador", jugadorDTO.getNombre()); 
     }
 

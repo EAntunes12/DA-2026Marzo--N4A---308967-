@@ -9,10 +9,10 @@ import da.ort.obligatorioErnestoAntunes.dto.CarreraDTO;
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
 
 public class SistemaJornadas {
-    List<Jornada> jornadas = new ArrayList<>();
-    
+    List<Jornada> jornadas = new ArrayList<>();    
 
     public List<Jornada> getJornadas() {
         return jornadas;
@@ -117,6 +117,46 @@ public class SistemaJornadas {
         }
 
         return carreras;
+    }
+
+    public Carrera buscarCarrera(int id) throws CarreraNoValidaException{
+        for(Jornada j : this.jornadas){
+            Carrera carrera = j.buscarCarrera(id);
+
+            if(carrera!=null){
+                return carrera;
+            }
+        }
+        throw new CarreraNoValidaException("No existe una carrera con ese ID");
+    }
+
+    public Participacion buscarParticipacion(int nro) throws ParticipacionNoValidaException{
+        for(Jornada j : this.jornadas){
+            Participacion p = j.buscarParticipacion(nro);
+
+            if(p != null){
+                return p;
+            }
+        }
+        throw new ParticipacionNoValidaException("No existe una participoacion con ese nro");
+    }
+
+    public void abrirCarrera(int id) throws CarreraNoValidaException{
+        Carrera c = buscarCarrera(id);
+        c.abrir();
+    }
+
+    public void cerrarCarrera(int id) throws CarreraNoValidaException {
+        Carrera c = buscarCarrera(id);
+        c.cerrar();
+    }
+
+    public void finalizarCarrera(int id, int nroRegistroPart) throws ParticipacionNoValidaException, CarreraNoValidaException {
+        Carrera c = buscarCarrera(id);
+        Participacion p = buscarParticipacion(nroRegistroPart);
+        
+        c.finalizar();
+        c.asignarGanador(p);
     }
 
 }

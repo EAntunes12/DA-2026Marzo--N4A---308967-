@@ -9,12 +9,12 @@ public class Finalizada implements EstadoCarrera{
     public void abrir(Carrera carrera) throws CarreraNoValidaException {
         throw new CarreraNoValidaException("No se puede abrir una carrera finalizada");
     }
-
+/*
     @Override
     public void hacerEstable(Carrera carrera) throws CarreraNoValidaException {
         throw new CarreraNoValidaException("No se puede hacer estable una carrera finalizada");
     }
-
+*/
     @Override
     public void cerrar(Carrera carrera) throws CarreraNoValidaException {
         throw new CarreraNoValidaException("No se puede cerrar una carrera finalizada");

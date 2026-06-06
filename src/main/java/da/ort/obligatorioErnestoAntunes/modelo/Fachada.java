@@ -3,11 +3,13 @@ package da.ort.obligatorioErnestoAntunes.modelo;
 import java.time.LocalDate;
 import java.util.List;
 
+import da.ort.obligatorioErnestoAntunes.dto.ParticipacionDTO;
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CaballoNoValidoException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ModalidadNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioExistenteException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioInvalidoException;
 
@@ -101,6 +103,22 @@ public class Fachada {
 
         public List<Carrera> getCarrerasDisponiblesPorJornada(LocalDate fecha){
             return sistemaJornadas.getCarrerasDisponiblesPorJornada(fecha);
+        }
+
+        public void abrirCarrera(int id) throws CarreraNoValidaException{
+            sistemaJornadas.abrirCarrera(id);
+        }
+
+        public Carrera buscarCarrera(int id) throws CarreraNoValidaException{
+            return sistemaJornadas.buscarCarrera(id);
+        }
+
+        public void cerrarCarrera(int id) throws CarreraNoValidaException{
+            sistemaJornadas.cerrarCarrera(id);
+        }
+
+        public void finalizarCarrera(int id, int nroRegistroPart) throws ParticipacionNoValidaException, CarreraNoValidaException {
+            sistemaJornadas.finalizarCarrera(id, nroRegistroPart); 
         }
           
 

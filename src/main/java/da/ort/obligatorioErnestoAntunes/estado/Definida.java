@@ -10,11 +10,12 @@ public class Definida implements EstadoCarrera{
         carrera.setEstado(new Abierta());
     }
 
+    /*
     @Override
     public void hacerEstable(Carrera carrera) throws CarreraNoValidaException {
         throw new CarreraNoValidaException("No se puedde hacer estable una carrera definida");
     }
-
+*/
     @Override
     public void cerrar(Carrera carrera) throws CarreraNoValidaException {
         throw new CarreraNoValidaException("No se puede cerrar una carrera definida.");

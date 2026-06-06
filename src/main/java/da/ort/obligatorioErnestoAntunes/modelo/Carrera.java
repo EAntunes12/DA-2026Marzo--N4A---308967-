@@ -7,13 +7,18 @@ import java.util.List;
 
 import org.springframework.cglib.core.Local;
 
+import da.ort.obligatorioErnestoAntunes.estado.Abierta;
 import da.ort.obligatorioErnestoAntunes.estado.Definida;
+import da.ort.obligatorioErnestoAntunes.estado.Estable;
 import da.ort.obligatorioErnestoAntunes.estado.EstadoCarrera;
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
 
 public class Carrera {
+    private static int ultimoId = 0;  //agregue un id a la carrera para la busqueda 
+    private int id;   
+
     private int numero;
     private String nombre;
     private Participacion ganador;
@@ -31,12 +36,17 @@ public class Carrera {
     }
 
     public Carrera( String nombre, LocalDate fecha) {
+        this.id = ++ultimoId;
         this.nombre = nombre;
         this.ganador = null;
         this.fecha = fecha;
         this.estado = new Definida();
         this.participaciones = new ArrayList<>();
         this.apuestas = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getNumero() {
@@ -124,7 +134,7 @@ public class Carrera {
         estado.abrir(this);
     }
 
-    private void actualizarEstado() throws CarreraNoValidaException{
+    private void actualizarEstado(){     
         boolean todosValidos = true;
 
         for (Participacion p : participaciones) {
@@ -135,18 +145,14 @@ public class Carrera {
         }
 
         if (todosValidos) {
-            estado.hacerEstable(this);
+            setEstado(new Estable());
         } else {
-            estado.abrir(this);
+            setEstado(new Abierta());
         }
     }
 
     public void cerrar() throws CarreraNoValidaException {
         estado.cerrar(this);
-    }
-
-    public void hacerEstable() throws CarreraNoValidaException {
-        estado.hacerEstable(this);
     }
 
     public void finalizar() throws CarreraNoValidaException {
@@ -200,5 +206,18 @@ public class Carrera {
 
     public boolean estaFinalizada() {
         return estado.esFinalizada();
+    }
+
+    public Participacion buscarParticipacion(int nro) {
+        for(Participacion p : this.participaciones){
+            if(p.getNumeroRegistro() == nro){
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public void asignarGanador(Participacion p) {
+        this.ganador = p;
     }
 }

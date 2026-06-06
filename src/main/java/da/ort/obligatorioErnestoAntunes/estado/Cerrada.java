@@ -29,12 +29,12 @@ public class Cerrada implements EstadoCarrera{
     public String getNombre() {
         return "Cerrada";
     }
-
+/*
     @Override
     public void hacerEstable(Carrera carrera) throws CarreraNoValidaException {
         throw new CarreraNoValidaException("La carrera no se puede hacer estable si ya fue cerrada.");
     }
-
+*/
     @Override
     public void finalizar(Carrera carrera) throws CarreraNoValidaException {
         carrera.setEstado(new Finalizada());
