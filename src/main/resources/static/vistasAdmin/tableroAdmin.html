@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tablero de Control - Admin</title>
+  <link rel="stylesheet" href="/vistasAdmin/tableroAdmin.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Tablero de Control</h1>
+        <div style="color:var(--muted);font-size:13px">Resumen general de la jornada seleccionada</div>
+      </div>
+      <div class="controls">
+        <div class="toolbar">
+          <button id="prevJornada" class="btn secondary">◀</button>
+          <div id="fechaJornada" style="padding:8px 12px;background:#fff;border-radius:6px">Jornada</div>
+          <button id="nextJornada" class="btn secondary">▶</button>
+        </div>
+        <button id="logoutBtn" class="logout">Cerrar sesión</button>
+      </div>
+    </div>
+
+    <!-- Error banner (oculto por defecto) -->
+    <div id="errorArea" class="error-banner" style="display:none">
+      <div id="errorMsg" class="msg"></div>
+      <button id="errorClose" class="close" aria-label="Cerrar mensaje">✕</button>
+    </div>
+
+    <div class="card-row">
+      <div class="card money">
+        <div class="label">TOTAL APOSTADO</div>
+        <div id="totalApostado" class="value">-</div>
+      </div>
+      <div class="card money">
+        <div class="label">TOTAL PAGADO</div>
+        <div id="totalPagado" class="value">-</div>
+      </div>
+      <div class="card money">
+        <div class="label">COMISIONES</div>
+        <div id="comisiones" class="value">-</div>
+      </div>
+      <div class="card money">
+        <div class="label">BALANCE GENERAL</div>
+        <div id="balance" class="value">-</div>
+      </div>
+    </div>
+
+    <div class="card-row">
+      <div class="card">
+        <div class="label">CARRERAS TOTALES</div>
+        <div id="totalCarreras" class="value">-</div>
+      </div>
+      <div class="card">
+        <div class="label">FINALIZADAS</div>
+        <div id="finalizadas" class="value">-</div>
+      </div>
+      <div class="card">
+        <div class="label">FALTAN CORRER</div>
+        <div id="proximas" class="value">-</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <h3>Carreras Finalizadas</h3>
+        <div class="small-badge" id="cantFinalizadas">0</div>
+      </div>
+      <table class="table" id="tablaFinalizadas">
+        <thead>
+          <tr><th>N°</th><th>Fecha</th><th>Caballos</th><th>Total Apostado</th><th>Total Pagado</th><th>Caballo Ganador</th><th>Dividendo Final</th></tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="7" class="empty">No hay carreras finalizadas</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <h3>Próximas Carreras</h3>
+        <div class="small-badge" id="cantProximas">0 pendientes</div>
+      </div>
+      <table class="table" id="tablaProximas">
+        <thead>
+          <tr><th>N°</th><th>Estado</th><th>Caballos</th><th>Total Apostado</th><th>Apuestas</th><th>Acción</th></tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="6" class="empty">No hay próximas carreras</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import dispatcher from '/CommandDispatcher.js';
+
+    const view = dispatcher.registerView('tableroAdmin', {
+      urlInicio: '/tableroAdmin/vistaConectada',
+      onError: (status, text) => mostrarError(`Error ${status}: ${text}`),
+      onException: (msg) => mostrarError(msg)
+    });
+
+    function mostrarError(msg){
+      try{
+        const area = document.getElementById('errorArea');
+        const span = document.getElementById('errorMsg');
+        if(!area || !span){ alert(msg); return; }
+        span.textContent = typeof msg === 'string' ? msg : (msg?.message || JSON.stringify(msg));
+        area.style.display = 'flex';
+        // auto-hide after 8 seconds
+        if(area._hideTimeout) clearTimeout(area._hideTimeout);
+        area._hideTimeout = setTimeout(() => { area.style.display = 'none'; }, 8000);
+      }catch(e){ console.error('mostrarError failed', e); alert(msg); }
+    }
+
+    // close button for error area
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('errorClose');
+      const area = document.getElementById('errorArea');
+      if(btn && area) btn.addEventListener('click', () => { area.style.display = 'none'; });
+    });
+
+    // Utilities: money and date parsing (UTC-safe)
+    function formatMoney(v){
+      if(v === null || v === undefined) return '-';
+      if(typeof v === 'string'){
+        const cleaned = v.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(/,/g, '.');
+        const num = parseFloat(cleaned);
+        if(!isNaN(num)) return '$' + new Intl.NumberFormat('es-UY', { maximumFractionDigits: 0 }).format(Math.round(num));
+        return v;
+      }
+      if(typeof v === 'number') return '$' + new Intl.NumberFormat('es-UY', { maximumFractionDigits: 0 }).format(Math.round(v));
+      return String(v);
+    }
+
+    function parseISODateToUTC(iso){
+      if(!iso) return null;
+      const s = String(iso).split('T')[0];
+      const parts = s.split('-');
+      if(parts.length === 3){
+        const y = parseInt(parts[0],10); const m = parseInt(parts[1],10) - 1; const d = parseInt(parts[2],10);
+        return new Date(Date.UTC(y,m,d));
+      }
+      const d = new Date(iso);
+      if(isNaN(d)) return null;
+      return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    }
+
+    function formatDateISO(iso){
+      const d = parseISODateToUTC(iso);
+      if(!d) return '-';
+      const day = String(d.getUTCDate()).padStart(2,'0');
+      const month = String(d.getUTCMonth() + 1).padStart(2,'0');
+      const year = d.getUTCFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    function formatWeekday(iso){
+      const d = parseISODateToUTC(iso); if(!d) return '';
+      const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+      return days[d.getUTCDay()];
+    }
+
+    // Handlers for simple commands
+    view.handler('Total apostado en la jornada', v => { console.debug('cmd: Total apostado en la jornada', v); document.getElementById('totalApostado').textContent = formatMoney(v); });
+    view.handler('Total pagado en la jornada', v => { console.debug('cmd: Total pagado en la jornada', v); document.getElementById('totalPagado').textContent = formatMoney(v); });
+    view.handler('Comisiones', v => { console.debug('cmd: Comisiones', v); document.getElementById('comisiones').textContent = formatMoney(v); });
+    view.handler('Balance de la jornada', v => { console.debug('cmd: Balance de la jornada', v); document.getElementById('balance').textContent = formatMoney(v); });
+    // List handlers
+    view.handler('Carreras finalizadas', lista => { console.debug('cmd: Carreras finalizadas', lista); renderFinalizadas(lista); });
+    view.handler('Proximas carreras', lista => { console.debug('cmd: Proximas carreras', lista); renderProximas(lista); });
+    view.handler('Cantidad proximas carreras', v => { console.debug('cmd: Cantidad proximas carreras', v); document.getElementById('cantProximas').textContent = `${v} pendientes`; document.getElementById('proximas').textContent = v; });
+    view.handler('Cantidad carreras finalizadas', v => { console.debug('cmd: Cantidad carreras finalizadas', v); document.getElementById('cantFinalizadas').textContent = v; document.getElementById('finalizadas').textContent = v; });
+    view.handler('Total de carreras', v => { console.debug('cmd: Total de carreras', v); document.getElementById('totalCarreras').textContent = v; });
+
+    // Jornada info
+    view.handler('mostrarJornada', (j) => {
+      console.debug('cmd: mostrarJornada', j);
+      if(!j) return;
+      const f = j.fecha || j.fechaString || j.fechaFormateada || j;
+      const dia = formatWeekday(f);
+      document.getElementById('fechaJornada').textContent = (dia ? (dia + ' ') : '') + formatDateISO(f);
+    });
+
+    // Redirect commands
+    view.handler('Gestionar carrera', (url) => { if(url) window.location.href = url; });
+    view.handler('accesoNoPermitido', (url) => { if(url) window.location.href = url; });
+
+    // Render finalizadas
+    function renderFinalizadas(lista){
+      console.debug('renderFinalizadas called with', lista);
+      const tbody = document.querySelector('#tablaFinalizadas tbody'); tbody.innerHTML = '';
+      if(!lista || lista.length === 0){ tbody.innerHTML = '<tr><td colspan="7" class="empty">No hay carreras finalizadas</td></tr>'; return; }
+      lista.forEach((c, idx) => {
+        console.debug(`finalizada[${idx}]`, c);
+        const tr = document.createElement('tr');
+        const nro = c.numero || (c.id || idx + 1);
+        const fecha = c.fecha ? formatDateISO(c.fecha) : '-';
+        const caballos = (c.participaciones && c.participaciones.length) || 0;
+        const totalApostado = (c.totalApostado !== undefined && c.totalApostado !== null) ? c.totalApostado : ((c.total !== undefined) ? c.total : 0);
+        const totalPagado = (c.totalPagado !== undefined && c.totalPagado !== null) ? c.totalPagado : 0;
+
+        // ganador
+        let ganadorNombre = '-'; let dividendo = '-';
+        if(c.ganador && c.ganador.caballo){ ganadorNombre = c.ganador.caballo.nombre || '-'; dividendo = c.ganador.dividendo !== undefined ? c.ganador.dividendo : '-'; }
+        else if(c.participaciones && c.participaciones.length){
+          const best = c.participaciones.reduce((acc,p) => { if(!acc) return p; return (p.dividendo || 0) > (acc.dividendo || 0) ? p : acc; }, null);
+          if(best){ ganadorNombre = (best.caballo && best.caballo.nombre) ? best.caballo.nombre : ('#'+(best.numeroRegistro||best.nroRegistro||'?')); dividendo = best.dividendo !== undefined ? best.dividendo : '-'; }
+        }
+
+        tr.innerHTML = `
+          <td>${nro}</td>
+          <td>${fecha}</td>
+          <td>${caballos}</td>
+          <td style="color:var(--accent);">${formatMoney(totalApostado)}</td>
+          <td style="color:var(--success);">${formatMoney(totalPagado)}</td>
+          <td><div class="horse-name" title="${ganadorNombre}">${ganadorNombre}${dividendo !== '-' ? '<span class="winner-flag">🏆</span>' : ''}</div></td>
+          <td>${dividendo !== '-' ? formatMoney(dividendo) : '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Render proximas
+    function renderProximas(lista){
+      console.log("LISTA COMPLETA:", lista);
+      console.debug('renderProximas called with', lista);
+      const tbody = document.querySelector('#tablaProximas tbody'); tbody.innerHTML = '';
+      if(!lista || lista.length === 0){ tbody.innerHTML = '<tr><td colspan="6" class="empty">No hay próximas carreras</td></tr>'; return; }
+      lista.forEach((c, idx) => {
+        console.debug(`proxima[${idx}]`, c);
+        const tr = document.createElement('tr');
+        const nro = c.numero || (c.id || idx + 1);
+        // Normalize estado to string
+        let estadoRaw = c.estado;
+        let estadoStr = '';
+        if(typeof estadoRaw === 'string') estadoStr = estadoRaw;
+        else if(estadoRaw && (estadoRaw.nombre || estadoRaw.name)) estadoStr = estadoRaw.nombre || estadoRaw.name;
+        else if(estadoRaw && typeof estadoRaw.toString === 'function') estadoStr = String(estadoRaw);
+        estadoStr = estadoStr || 'DESCONOCIDO';
+
+        const caballos = (c.participaciones && c.participaciones.length) || 0;
+        const totalApostado = c.totalApostado || 0;
+        const apuestas = c.cantApuestas || 0;  
+        let estadoHtml;
+        const up = estadoStr.toUpperCase();
+        if(up.includes('ABIERTA') || up.includes('OPEN')){
+          estadoHtml = '<span class="status-open">ABIERTA</span>';
+        } else if(up.includes('ESTABLE')){
+          estadoHtml = '<span class="status-stable">ESTABLE</span>';
+        } else if(up.includes('CERR') || up.includes('CLOSED')){
+          estadoHtml = '<span class="status-closed">CERRADA</span>';
+        } else if(up.includes('DEF') || up.includes('DEFIN')){
+          estadoHtml = '<span class="status-defined">DEFINIDA</span>';
+        } else {
+          estadoHtml = '<span class="status-unknown">DESCONOCIDO</span>';
+        }
+
+        tr.innerHTML = `
+          <td>${nro}</td>
+          <td>${estadoHtml}</td>
+          <td>${caballos}</td>
+          <td>${formatMoney(totalApostado)}</td>
+          <td>${apuestas}</td>
+          <td><button class="manage-btn" data-id="${c.id}">Gestionar</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Attach listeners
+      tbody.querySelectorAll('.manage-btn').forEach(b => {
+        b.addEventListener('click', () => { const id = b.getAttribute('data-id'); dispatcher.submit('/tableroAdmin/gestionarCarrera', { id: id }); });
+      });
+    }
+
+    // botones
+    document.getElementById('nextJornada').addEventListener('click', () => dispatcher.submit('/tableroAdmin/siguienteJornada'));
+    document.getElementById('prevJornada').addEventListener('click', () => dispatcher.submit('/tableroAdmin/anteriorJornada'));
+    document.getElementById('logoutBtn').addEventListener('click', () => dispatcher.submit('/tableroAdmin/logout'));
+
+    // Start
+    dispatcher.startView(view);
+  </script>
+</body>
+</html>

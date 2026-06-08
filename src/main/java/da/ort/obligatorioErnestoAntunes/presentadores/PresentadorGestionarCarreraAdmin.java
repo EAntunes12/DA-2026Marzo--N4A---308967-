@@ -82,7 +82,7 @@ public class PresentadorGestionarCarreraAdmin {
         return Commands.create(carreraNoValida());
     }
 
-    @PostMapping("/volverTablero")
+    @PostMapping("/volverTablero") 
     public Commands volverTablero(){
         return Commands.create(volverAlTablero());
     }
@@ -96,11 +96,11 @@ public class PresentadorGestionarCarreraAdmin {
     }
 
     private Command caballosParticipantes() {
-        return new Command("Caballos participantes", ParticipacionDTO.fromList(carrera.getParticipaciones()));
+        return new Command("Caballos participantes", carrera.getParticipaciones());
     }
 
     private Command datosCarrera() {
-        return new Command("Datos carrera", carrera); //TODO CarreraDTO no tiene el total apostado
+        return new Command("Datos carrera", carrera); 
     }
 
     private Command accesoNoPermitido() {

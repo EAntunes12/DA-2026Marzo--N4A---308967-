@@ -95,28 +95,23 @@ public class SistemaJornadas {
         return listaRet;
     }
 
-    public List<Carrera> getCarrerasFinalizadasPorJornada(LocalDate fecha){
+    public List<Carrera> getCarrerasFinalizadasPorJornada(LocalDate fecha) throws JornadaNoValidaException{
         List<Carrera> carreras = new ArrayList<>();
-
-        for(Jornada j : jornadas){
-            if(j.getFecha().equals(fecha)){
-                carreras.addAll(j.getCarrerasFinalizadas());
-            }            
-        }
+        Jornada j = buscarJornadaPorFecha(fecha);
+        carreras.addAll(j.getCarrerasFinalizadas());
         return carreras;       
 
     }
 
-    public List<Carrera> getCarrerasDisponiblesPorJornada(LocalDate fecha){
+    public List<Carrera> getCarrerasDisponiblesPorJornada(LocalDate fecha) throws JornadaNoValidaException{
         List<Carrera> carreras = new ArrayList<>();
-
-        for(Jornada j : jornadas){
-            if(j.getFecha().equals(fecha)){
-                carreras.addAll(j.getCarrerasNoFinalizadas());                
-            }
-        }
-
+        Jornada j = buscarJornadaPorFecha(fecha);
+        carreras.addAll(j.getCarrerasNoFinalizadas());              
         return carreras;
+    }
+
+    public int getCantCarrerasJornada(LocalDate fecha) throws JornadaNoValidaException{
+        return getCarrerasDisponiblesPorJornada(fecha).size() + getCarrerasFinalizadasPorJornada(fecha).size(); 
     }
 
     public Carrera buscarCarrera(int id) throws CarreraNoValidaException{
@@ -159,4 +154,31 @@ public class SistemaJornadas {
         c.asignarGanador(p);
     }
 
+    private Jornada buscarJornadaPorFecha(LocalDate fecha) throws JornadaNoValidaException{
+        for(Jornada j : this.jornadas){
+            if(j.getFecha().equals(fecha)){
+                return j;
+            }
+        }
+        throw new JornadaNoValidaException("No existe una jornada con esa fecha.");
+    }
+
+    public double getTotalApostadoPorJornada(LocalDate fechaJornada) throws JornadaNoValidaException{
+        Jornada j = buscarJornadaPorFecha(fechaJornada);
+        return j.getTotalApostado();
+    }
+
+    public double getTotalPagadoPorJornada(LocalDate fechaJornada) throws JornadaNoValidaException{
+        Jornada j = buscarJornadaPorFecha(fechaJornada);
+        return j.getTotalPagado();
+    }
+
+    public double getBalanceJornada(LocalDate fechaJornada) throws JornadaNoValidaException{
+        return getTotalApostadoPorJornada(fechaJornada) - getTotalPagadoPorJornada(fechaJornada);
+    }
+
+    public double getTotalComisionJornada(LocalDate fechaJornada) throws JornadaNoValidaException{
+        Jornada j = buscarJornadaPorFecha(fechaJornada);
+        return j.getTotalComision();
+    }
 }

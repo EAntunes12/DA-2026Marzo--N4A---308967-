@@ -9,13 +9,45 @@ import da.ort.obligatorioErnestoAntunes.modelo.Carrera;
 import da.ort.obligatorioErnestoAntunes.modelo.Participacion;
 
 public class CarreraDTO {
-    private int id;
+    private int id;   
     private LocalDate fecha;
     private int numero;
     private String nombre;
     private EstadoCarrera estado;
-    private List<Participacion> participaciones;
+    private List<ParticipacionDTO> participaciones;
+    private double totalApostado;
+    private double totalPagado;
+    private ParticipacionDTO ganador;
+    private int cantApuestas;
     
+    public int getCantApuestas() {
+        return cantApuestas;
+    }
+
+    public double getTotalApostado() {
+        return totalApostado;
+    }
+
+    public void setTotalApostado(double totalApostado) {
+        this.totalApostado = totalApostado;
+    }
+
+    public double getTotalPagado() {
+        return totalPagado;
+    }
+
+    public void setTotalPagado(double totalPagado) {
+        this.totalPagado = totalPagado;
+    }
+
+    public ParticipacionDTO getGanador() {
+        return ganador;
+    }
+
+    public void setGanador(ParticipacionDTO ganador) {
+        this.ganador = ganador;
+    }
+
     public CarreraDTO() {
     }
 
@@ -25,7 +57,11 @@ public class CarreraDTO {
         this.numero = c.getNumero();
         this.nombre = c.getNombre();
         this.estado = c.getEstado();
-        this.participaciones = c.getParticipaciones();
+        this.participaciones = ParticipacionDTO.fromList(c.getParticipaciones());
+        this.totalApostado = c.getTotalApostado();
+        this.totalPagado = c.getTotalPagado();
+        this.ganador = c.getGanador() != null ? new ParticipacionDTO(c.getGanador()) : null;
+        this.cantApuestas = c.getApuestas().size();
     }
     public LocalDate getFecha() {
         return fecha;
@@ -33,6 +69,9 @@ public class CarreraDTO {
 
     public int getId() {
         return id;
+    }    
+    public void setId(int id) {
+        this.id = id;
     }
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
@@ -49,10 +88,10 @@ public class CarreraDTO {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    public List<Participacion> getParticipaciones() {
+    public List<ParticipacionDTO> getParticipaciones() {
         return participaciones;
     }
-    public void setParticipaciones(List<Participacion> participaciones) {
+    public void setParticipaciones(List<ParticipacionDTO> participaciones) {
         this.participaciones = participaciones;
     }
 

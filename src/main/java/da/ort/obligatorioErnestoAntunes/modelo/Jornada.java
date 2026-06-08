@@ -122,4 +122,30 @@ public class Jornada {
         return null;
     }
 
+    public double getTotalApostado(){
+        double total = 0;
+        for(Carrera c : this.carreras){
+            total += c.getTotalApostado();
+        }
+
+        return total;
+    }
+
+    public double getTotalPagado(){
+        double total = 0;
+        for(Carrera c : this.carreras){
+            total += c.getTotalPagado();
+        }
+
+        return total;
+    }
+
+    public double getTotalComision(){
+        double total = 0;
+        for(Carrera c : this.carreras){
+            total += c.getComision();
+        }
+        return total;
+    }
+
 }

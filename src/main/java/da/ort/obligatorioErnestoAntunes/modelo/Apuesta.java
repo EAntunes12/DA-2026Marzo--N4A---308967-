@@ -74,4 +74,12 @@ public class Apuesta {
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
+
+    public double calcularPremio(double totalApostadoCaballo){
+        return modalidad.calcularPago(valor, participacion.getDividendo(), totalApostadoCaballo);
+    }
+
+    public boolean esGanadora(Participacion ganador){
+        return this.participacion == ganador;
+    }
 }

@@ -38,17 +38,24 @@ public class PresentadorTableroAdmin {
             if(jornadaActual == null){
                 jornadaActual = fachada.obtenerJornadaActual();
             } 
-            return Commands.create(carrerasFinalizadas(), proximasCarreras());
+            return Commands.create(
+                totalApostado(), totalPagado(), comisiones(), balanceJornada(),
+                cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
+                carrerasFinalizadas(), proximasCarreras(), mostrarJornada()
+            ); 
         }
         return Commands.create(accesoNoPermitido());
     }
-
 
     @PostMapping("/siguienteJornada")
     public Commands siguienteJornada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
         if(adminDTO != null){
             jornadaActual = fachada.siguienteJornada(jornadaActual);
-            return Commands.create(carrerasFinalizadas(), proximasCarreras());
+            return Commands.create(
+                totalApostado(), totalPagado(), comisiones(), balanceJornada(),
+                cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
+                carrerasFinalizadas(), proximasCarreras(), mostrarJornada()
+            );
         }
         return Commands.create(accesoNoPermitido());
     }
@@ -57,7 +64,11 @@ public class PresentadorTableroAdmin {
     public Commands anteriorJornada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
         if(adminDTO != null){
             jornadaActual = fachada.anteriorJornada(jornadaActual);
-            return Commands.create(carrerasFinalizadas(), proximasCarreras());
+            return Commands.create(
+                totalApostado(), totalPagado(), comisiones(), balanceJornada(),
+                cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
+                carrerasFinalizadas(), proximasCarreras(), mostrarJornada()
+            );
         }
         return Commands.create(accesoNoPermitido());
     }
@@ -70,9 +81,7 @@ public class PresentadorTableroAdmin {
             return Commands.create(vistaGestionarCarrera());
         }
         return Commands.create(accesoNoPermitido());
-    }
-
-    
+    }    
     
     @PostMapping("/logout")
     public Commands logout(HttpSession session) throws UsuarioInvalidoException{
@@ -90,21 +99,42 @@ public class PresentadorTableroAdmin {
        return new Command("accesoNoPermitido", "loginAdmin.html");
     }
 
-    private Command proximasCarreras() throws JornadaNoValidaException{
-        if(jornadaActual == null) throw new JornadaNoValidaException("La jornada no existe"); //en teoria nunca deberia pasar que no haya una jornada pero lo dejo por las dudas
+    private Command totalApostado() throws JornadaNoValidaException {
+        return new Command("Total apostado en la jornada", fachada.getTotalApostadoPorJornada(jornadaActual.getFecha()));
+    }
 
+    private Command totalPagado() throws JornadaNoValidaException{
+        return new Command("Total pagado en la jornada", fachada.getTotalPagadoPorJornada(jornadaActual.getFecha()));
+    }
+
+    private Command balanceJornada() throws JornadaNoValidaException{
+        return new Command("Balance de la jornada", fachada.getBalanceJornada(jornadaActual.getFecha()));
+    }
+
+    private Command comisiones() throws JornadaNoValidaException{
+        return new Command("Comisiones", fachada.getTotalComisionJornada(jornadaActual.getFecha()));
+    }
+
+    private Command proximasCarreras() throws JornadaNoValidaException{
         return new Command("Proximas carreras", CarreraDTO.fromList(fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha())));
     }
 
-
     private Command carrerasFinalizadas() throws JornadaNoValidaException{
-        if(jornadaActual == null) throw new JornadaNoValidaException("La jornada no existe"); //lo mismo
-
         return new Command("Carreras finalizadas", CarreraDTO.fromList(fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha())));
     }
 
+    private Command cantProximasCarreras() throws JornadaNoValidaException{
+        return new Command("Cantidad proximas carreras", fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha()).size());
+    }
 
-    //comando temporal para debuggar
+    private Command cantCarrerasFinalizadas() throws JornadaNoValidaException{
+        return new Command("Cantidad carreras finalizadas", fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha()).size());
+    }
+
+    private Command cantCarrerasJornada() throws JornadaNoValidaException{
+        return new Command("Total de carreras", fachada.getCantCarrerasJornada(jornadaActual.getFecha()));
+    }
+
     private Command mostrarJornada(){
         return new Command("mostrarJornada", new JornadaDTO(jornadaActual));
     }

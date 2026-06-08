@@ -28,6 +28,6 @@ public class PresentadorLoginAdmin {
     }
 
     private Command accesoPermitido(){
-        return new Command("accesoPermitido", "tableroAdmin.html"); //tablero.html vista no creada
+        return new Command("accesoPermitido", "tableroAdmin.html");
     }
 }

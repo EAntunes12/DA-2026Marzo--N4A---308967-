@@ -107,12 +107,13 @@ public class Carrera {
         participaciones.add(p);
     }
 
-    public void agregarApuesta(Apuesta a) throws ApuestaNoValidaException {
+    public void agregarApuesta(Apuesta a) throws ApuestaNoValidaException, CarreraNoValidaException {
         if (a == null)
             throw new ApuestaNoValidaException("La apuesta no es valida.");
 
         a.validar();
         apuestas.add(a);
+        recalcularDividendos();
     }
 
     public void validar() throws CarreraNoValidaException {
@@ -219,5 +220,32 @@ public class Carrera {
 
     public void asignarGanador(Participacion p) {
         this.ganador = p;
+    }
+
+    public double getTotalApostado(){
+        double total = 0;
+        for(Apuesta a : this.apuestas){
+            total += a.getValor();
+        }
+
+        return total;
+    }
+
+    public double getTotalPagado(){
+        if(!estaFinalizada()) return 0; //pongo esto para que no recorra carreras qe no tienen ganaador
+
+        double total = 0;
+     
+        for(Apuesta a : this.apuestas){
+            if(a.esGanadora(this.ganador)){
+                total += a.calcularPremio(totalApostadoPorCaballo(a.getParticipacion()));
+            }
+        }
+
+        return total;
+    }
+
+    public double getComision(){
+        return getTotalApostado() * Fachada.getInstancia().getComision();
     }
 }

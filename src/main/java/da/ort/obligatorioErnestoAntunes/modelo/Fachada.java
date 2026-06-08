@@ -97,12 +97,16 @@ public class Fachada {
             return sistemaJornadas.getApuestasPorJugador(jugador);
         }
 
-        public List<Carrera> getCarrerasFinalizadasPorJornada(LocalDate fecha){
+        public List<Carrera> getCarrerasFinalizadasPorJornada(LocalDate fecha) throws JornadaNoValidaException{
             return sistemaJornadas.getCarrerasFinalizadasPorJornada(fecha);
         }
 
-        public List<Carrera> getCarrerasDisponiblesPorJornada(LocalDate fecha){
+        public List<Carrera> getCarrerasDisponiblesPorJornada(LocalDate fecha) throws JornadaNoValidaException{
             return sistemaJornadas.getCarrerasDisponiblesPorJornada(fecha);
+        }        
+
+        public int getCantCarrerasJornada(LocalDate fecha) throws JornadaNoValidaException {
+            return sistemaJornadas.getCantCarrerasJornada(fecha);
         }
 
         public void abrirCarrera(int id) throws CarreraNoValidaException{
@@ -120,7 +124,24 @@ public class Fachada {
         public void finalizarCarrera(int id, int nroRegistroPart) throws ParticipacionNoValidaException, CarreraNoValidaException {
             sistemaJornadas.finalizarCarrera(id, nroRegistroPart); 
         }
-          
+
+        public double getTotalApostadoPorJornada(LocalDate fechaJornada) throws JornadaNoValidaException {
+            return sistemaJornadas.getTotalApostadoPorJornada(fechaJornada);
+        }
+
+        public double getTotalPagadoPorJornada(LocalDate fechaJornada) throws JornadaNoValidaException {
+            return sistemaJornadas.getTotalPagadoPorJornada(fechaJornada);
+        }
+
+        public double getBalanceJornada(LocalDate fechaJornada) throws JornadaNoValidaException {
+            return sistemaJornadas.getBalanceJornada(fechaJornada);
+        }
+
+        public double getTotalComisionJornada(LocalDate fechaJornada) throws JornadaNoValidaException {
+            return sistemaJornadas.getTotalComisionJornada(fechaJornada);
+        }
+        
+        
 
         
 
