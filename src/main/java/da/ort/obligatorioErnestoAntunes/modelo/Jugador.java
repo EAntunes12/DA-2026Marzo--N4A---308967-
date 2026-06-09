@@ -18,6 +18,10 @@ public class Jugador extends Usuario {
         this.saldo = saldo;
     }
     
+    public void pagarPremio(double premio){
+        this.saldo += premio;
+    }
+
     @Override
     public void validarSaldo() throws UsuarioInvalidoException {
          if(this.getSaldo() < 0){

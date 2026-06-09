@@ -16,9 +16,8 @@ import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
 
 public class Carrera {
-    private static int ultimoId = 0;  //agregue un id a la carrera para la busqueda 
-    private int id;   
-
+    private static int ultimoId = 0; // agregue un id a la carrera para la busqueda
+    private int id;
     private int numero;
     private String nombre;
     private Participacion ganador;
@@ -35,7 +34,7 @@ public class Carrera {
         return participaciones;
     }
 
-    public Carrera( String nombre, LocalDate fecha) {
+    public Carrera(String nombre, LocalDate fecha) {
         this.id = ++ultimoId;
         this.nombre = nombre;
         this.ganador = null;
@@ -135,7 +134,7 @@ public class Carrera {
         estado.abrir(this);
     }
 
-    private void actualizarEstado(){     
+    private void actualizarEstado() {
         boolean todosValidos = true;
 
         for (Participacion p : participaciones) {
@@ -156,7 +155,8 @@ public class Carrera {
         estado.cerrar(this);
     }
 
-    public void finalizar() throws CarreraNoValidaException {
+    public void finalizar(Participacion ganador) throws CarreraNoValidaException {
+        this.ganador = ganador;
         estado.finalizar(this);
     }
 
@@ -181,11 +181,23 @@ public class Carrera {
         return total;
     }
 
+    public int cantidadApuestasPorCaballo(Participacion p) {
+        int cantidad = 0;
+
+        for (Apuesta a : this.apuestas) {
+            if (a.getParticipacion() == p) {
+                cantidad++;
+            }
+        }
+
+        return cantidad;
+    }
+
     public boolean dividendoValido(Participacion p) {
         return p.getDividendo() > 1 && cantApuestasPorParticipacion(p) > 0;
     }
 
-    public void recalcularDividendos() throws CarreraNoValidaException{
+    public void recalcularDividendos() throws CarreraNoValidaException {
         double totalCarrera = 0;
         for (Apuesta a : apuestas) {
             totalCarrera += a.getValor();
@@ -201,7 +213,7 @@ public class Carrera {
         actualizarEstado();
     }
 
-    public boolean sePuedeApostar(){
+    public boolean sePuedeApostar() {
         return estado.sePuedeApostar();
     }
 
@@ -210,34 +222,31 @@ public class Carrera {
     }
 
     public Participacion buscarParticipacion(int nro) {
-        for(Participacion p : this.participaciones){
-            if(p.getNumeroRegistro() == nro){
+        for (Participacion p : this.participaciones) {
+            if (p.getNumeroRegistro() == nro) {
                 return p;
             }
         }
         return null;
     }
 
-    public void asignarGanador(Participacion p) {
-        this.ganador = p;
-    }
-
-    public double getTotalApostado(){
+    public double getTotalApostado() {
         double total = 0;
-        for(Apuesta a : this.apuestas){
+        for (Apuesta a : this.apuestas) {
             total += a.getValor();
         }
 
         return total;
     }
 
-    public double getTotalPagado(){
-        if(!estaFinalizada()) return 0; //pongo esto para que no recorra carreras qe no tienen ganaador
+    public double getTotalPagado() {
+        if (!estaFinalizada())
+            return 0; // pongo esto para que no recorra carreras qe no tienen ganaador
 
         double total = 0;
-     
-        for(Apuesta a : this.apuestas){
-            if(a.esGanadora(this.ganador)){
+
+        for (Apuesta a : this.apuestas) {
+            if (a.esGanadora(this.ganador)) {
                 total += a.calcularPremio(totalApostadoPorCaballo(a.getParticipacion()));
             }
         }
@@ -245,7 +254,7 @@ public class Carrera {
         return total;
     }
 
-    public double getComision(){
+    public double getComision() {
         return getTotalApostado() * Fachada.getInstancia().getComision();
     }
 }

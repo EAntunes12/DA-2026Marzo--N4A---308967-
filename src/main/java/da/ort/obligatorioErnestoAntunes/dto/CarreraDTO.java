@@ -57,10 +57,10 @@ public class CarreraDTO {
         this.numero = c.getNumero();
         this.nombre = c.getNombre();
         this.estado = c.getEstado();
-        this.participaciones = ParticipacionDTO.fromList(c.getParticipaciones());
+        this.participaciones = ParticipacionDTO.fromList(c.getParticipaciones(), c);
         this.totalApostado = c.getTotalApostado();
         this.totalPagado = c.getTotalPagado();
-        this.ganador = c.getGanador() != null ? new ParticipacionDTO(c.getGanador()) : null;
+        this.ganador = c.getGanador() != null ? new ParticipacionDTO(c.getGanador(), c) : null;
         this.cantApuestas = c.getApuestas().size();
     }
     public LocalDate getFecha() {

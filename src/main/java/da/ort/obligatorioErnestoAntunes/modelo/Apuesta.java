@@ -80,6 +80,7 @@ public class Apuesta {
     }
 
     public boolean esGanadora(Participacion ganador){
-        return this.participacion == ganador;
+        return this.participacion.getNumeroRegistro() == ganador.getNumeroRegistro();
+        //return this.participacion == ganador;
     }
 }

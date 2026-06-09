@@ -273,7 +273,8 @@
 
       // Attach listeners
       tbody.querySelectorAll('.manage-btn').forEach(b => {
-        b.addEventListener('click', () => { const id = b.getAttribute('data-id'); dispatcher.submit('/tableroAdmin/gestionarCarrera', { id: id }); });
+        b.addEventListener('click', () => { const id = b.getAttribute('data-id'); console.log("ID enviado:", id);
+        dispatcher.submit('/tableroAdmin/gestionarCarrera', { carrera: id }); });
       });
     }
 

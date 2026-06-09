@@ -35,7 +35,11 @@ public class PresentadorGestionarCarreraAdmin {
         @SessionAttribute(name="carreraSeleccionada",required=false) CarreraDTO carreraDTO
         ) 
     {
-        if(adminDTO != null && carreraDTO != null){
+        if(adminDTO == null){
+            return Commands.create(accesoNoPermitido());
+        }
+
+        if(carreraDTO != null){
             this.carrera = carreraDTO;
 
             return Commands.create(datosCarrera(), caballosParticipantes());
@@ -68,16 +72,13 @@ public class PresentadorGestionarCarreraAdmin {
     }
     
     @PostMapping("/finalizarCarrera")
-    public Commands finalizarCarrera(@RequestParam ParticipacionDTO participacion) throws CarreraNoValidaException, ParticipacionNoValidaException{
+    public Commands finalizarCarrera(@RequestParam int nroRegistro) throws CarreraNoValidaException, ParticipacionNoValidaException{
         if(carrera != null){
-            if(participacion == null){
-                throw new ParticipacionNoValidaException("Debe indicar caballo ganador de la carrera");
-            }
-
-            fachada.finalizarCarrera(carrera.getId(), participacion.getNroRegistro());  //TODO  FALTA QUE LE PAGUE A LOS QUE APOSTARON AL GANADOR
+            fachada.finalizarCarrera(carrera.getId(), nroRegistro);  //TODO  FALTA QUE finalizarCarrera LE PAGUE A LOS QUE APOSTARON AL GANADOR
             carrera = CarreraDTO.from(fachada.buscarCarrera(carrera.getId()));
 
-            return Commands.create(datosCarrera(), caballosParticipantes());
+            
+            return Commands.create(datosCarrera(), caballosParticipantes(), volverAlTablero());
         }
         return Commands.create(carreraNoValida());
     }

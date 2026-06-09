@@ -1,5 +1,6 @@
 package da.ort.obligatorioErnestoAntunes.presentadores;
 
+import da.ort.obligatorioErnestoAntunes.modelo.Carrera;
 import da.ort.obligatorioErnestoAntunes.modelo.Fachada;
 import da.ort.obligatorioErnestoAntunes.modelo.Jornada;
 
@@ -75,9 +76,11 @@ public class PresentadorTableroAdmin {
 
 
     @PostMapping("/gestionarCarrera")
-    public Commands gestionarCarrera(@RequestParam CarreraDTO carrera, @SessionAttribute(name="administrador",required=false) AdminDTO adminDTO, HttpSession session){
+    public Commands gestionarCarrera(@RequestParam int carrera, @SessionAttribute(name="administrador",required=false) AdminDTO adminDTO, HttpSession session) throws CarreraNoValidaException{
         if(adminDTO != null){
-            session.setAttribute("carreraSeleccionada", carrera);
+            System.out.println("ID recibido: " + carrera);
+            CarreraDTO carreraDTO = CarreraDTO.from(fachada.buscarCarrera(carrera));
+            session.setAttribute("carreraSeleccionada", carreraDTO);
             return Commands.create(vistaGestionarCarrera());
         }
         return Commands.create(accesoNoPermitido());

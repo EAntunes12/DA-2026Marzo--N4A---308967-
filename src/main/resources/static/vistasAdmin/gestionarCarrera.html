@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gestionar Carrera - Admin</title>
+    <link rel="stylesheet" href="/vistasAdmin/tableroAdmin.css">
+    <link rel="stylesheet" href="/vistasAdmin/gestionarCarrera.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 id="carreraTitulo">Carrera</h1>
+                <div style="color:var(--muted);font-size:13px" id="carreraSubtitulo">Gestión de carrera</div>
+            </div>
+            <div class="controls">
+                <button id="volverBtn" class="btn secondary">← Volver</button>
+            </div>
+        </div>
+
+        <!-- Error banner (oculto por defecto) -->
+        <div id="errorArea" class="error-banner" style="display:none">
+            <div id="errorMsg" class="msg"></div>
+            <button id="errorClose" class="close" aria-label="Cerrar mensaje">✕</button>
+        </div>
+
+        <!-- Carrera Info -->
+        <div class="carrera-info-section">
+            <div class="carrera-header">
+                <div class="carrera-title-block">
+                    <h2 id="carreraNombre">-</h2>
+                    <div id="carreraEstado" class="carrera-status-badge">-</div>
+                </div>
+                <div class="carrera-total">
+                    <div style="font-size:12px;color:var(--muted);text-transform:uppercase">TOTAL APOSTADO</div>
+                    <div id="carreraTotalApostado" style="font-size:28px;font-weight:700;color:var(--success)">$-</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="carrera-actions">
+                <button id="abrirCarreraBtn" class="btn primary">▶ Abrir Carrera</button>
+                <button id="cerrarCarreraBtn" class="btn danger">■ Cerrar Carrera</button>
+            </div>
+        </div>
+
+        <!-- Finalizar Carrera Section -->
+        <div class="carrera-finalizar-section">
+            <h3>Finalizar carrera con ganador:</h3>
+
+            <div class="finalizar-form">
+                <label for="caballoGanador">Seleccionar caballo ganador:</label>
+                <select id="caballoGanador" class="select-caballo">
+                    <option value="">— Elegir caballo —</option>
+                </select>
+
+                <button id="finalizarBtn" class="btn danger large">🏁 Finalizar Carrera y Pagar</button>
+
+                <div class="warning-message">
+                    <span class="warning-icon">⚠</span>
+                    <span>Esta acción pagará automáticamente a todos los jugadores que apostaron al ganador.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Caballos Participantes -->
+        <div class="section">
+            <div class="section-title">
+                <h3>Caballos Participantes</h3>
+                <div class="small-badge" id="cantCaballos">0</div>
+            </div>
+            <table class="table" id="tablaCaballos">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>NOMBRE DEL CABALLO</th>
+                        <th>DIVIDENDO ACTUAL</th>
+                        <th>TOTAL APOSTADO</th>
+                        <th>CANTIDAD DE APUESTAS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5" class="empty">No hay caballos participantes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import dispatcher from '/CommandDispatcher.js';
+
+        const view = dispatcher.registerView('gestionarCarrera', {
+            urlInicio: '/gestionarCarrera/vistaConectada',
+            onError: (status, text) => mostrarError(`Error ${status}: ${text}`),
+            onException: (msg) => mostrarError(msg)
+        });
+
+        // Estado de la carrera
+        let carreraData = null;
+
+        function mostrarError(msg) {
+            try {
+                const area = document.getElementById('errorArea');
+                const span = document.getElementById('errorMsg');
+                if (!area || !span) { alert(msg); return; }
+                span.textContent = typeof msg === 'string' ? msg : (msg?.message || JSON.stringify(msg));
+                area.style.display = 'flex';
+                // auto-hide after 5 seconds
+                if (area._hideTimeout) clearTimeout(area._hideTimeout);
+                area._hideTimeout = setTimeout(() => { area.style.display = 'none'; }, 5000);
+            } catch (e) { console.error('mostrarError failed', e); alert(msg); }
+        }
+
+        // Utilidades
+        function formatMoney(v) {
+            if (v === null || v === undefined) return '-';
+            if (typeof v === 'string') {
+                const cleaned = v.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(/,/g, '.');
+                const num = parseFloat(cleaned);
+                if (!isNaN(num)) return '$' + new Intl.NumberFormat('es-UY', { maximumFractionDigits: 0 }).format(Math.round(num));
+                return v;
+            }
+            if (typeof v === 'number') return '$' + new Intl.NumberFormat('es-UY', { maximumFractionDigits: 0 }).format(Math.round(v));
+            return String(v);
+        }
+
+        function formatEstado(estado) {
+            if (!estado) return 'DESCONOCIDO';
+            let estadoStr = '';
+            if (typeof estado === 'string') estadoStr = estado;
+            else if (estado.nombre) estadoStr = estado.nombre;
+            else if (estado.name) estadoStr = estado.name;
+            else estadoStr = String(estado);
+
+            const up = estadoStr.toUpperCase();
+            if (up.includes('ABIERTA') || up.includes('OPEN')) return 'ABIERTA';
+            if (up.includes('CERR') || up.includes('CLOSED')) return 'CERRADA';
+            if (up.includes('ESTABLE')) return 'ESTABLE';
+            if (up.includes('DEFIN')) return 'DEFINIDA';
+            return estadoStr;
+        }
+
+        function getEstadoClass(estado) {
+            const fmt = formatEstado(estado);
+            if (fmt === 'ABIERTA') return 'status-open';
+            if (fmt === 'CERRADA') return 'status-closed';
+            if (fmt === 'ESTABLE') return 'status-stable';
+            if (fmt === 'DEFINIDA') return 'status-defined';
+            return 'status-unknown';
+        }
+
+        function updateControls() {
+            const estado = carreraData?.estado;
+            const estadoStr = formatEstado(estado);
+
+            const abrirBtn = document.getElementById('abrirCarreraBtn');
+            const cerrarBtn = document.getElementById('cerrarCarreraBtn');
+            const finalizarBtn = document.getElementById('finalizarBtn');
+
+            // Mostrar/ocultar botones según estado
+            if (estadoStr === 'ABIERTA') {
+                abrirBtn.style.display = 'none';
+                cerrarBtn.style.display = 'inline-block';
+                finalizarBtn.disabled = true;
+            } else if (estadoStr === 'CERRADA') {
+                abrirBtn.style.display = 'inline-block';
+                cerrarBtn.style.display = 'none';
+                finalizarBtn.disabled = false;
+            } else if (estadoStr === 'DEFINIDA') {
+                abrirBtn.style.display = 'inline-block';
+                cerrarBtn.style.display = 'none';
+                finalizarBtn.disabled = true;
+            } else {
+                abrirBtn.style.display = 'inline-block';
+                cerrarBtn.style.display = 'inline-block';
+                finalizarBtn.disabled = true;
+            }
+        }
+
+        // Handlers
+        view.handler('Datos carrera', (carrera) => {
+            console.debug('cmd: Datos carrera', carrera);
+            carreraData = carrera;
+
+            const numero = carrera.numero || carrera.id || '#?';
+            const nombre = carrera.nombre || 'Carrera sin nombre';
+            const estado = formatEstado(carrera.estado);
+            const totalApostado = carrera.totalApostado || 0;
+
+            document.getElementById('carreraTitulo').textContent = nombre;
+            document.getElementById('carreraNombre').textContent = `${numero} • ${nombre}`;
+
+            const estadoBadge = document.getElementById('carreraEstado');
+            estadoBadge.textContent = estado;
+            estadoBadge.className = `carrera-status-badge ${getEstadoClass(carrera.estado)}`;
+
+            document.getElementById('carreraTotalApostado').textContent = formatMoney(totalApostado);
+
+            updateControls();
+        });
+
+        view.handler('Caballos participantes', (caballos) => {
+            console.debug('cmd: Caballos participantes', caballos);
+            renderCaballos(caballos);
+            rellenarSelect(caballos);
+        });
+
+        view.handler('Volver al tablero', (url) => {
+            console.debug('cmd: Volver al tablero', url);
+            if (url) window.location.href = url;
+        });
+
+        // Render tabla de caballos
+        function renderCaballos(lista) {
+            const tbody = document.querySelector('#tablaCaballos tbody');
+            tbody.innerHTML = '';
+
+            if (!lista || lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty">No hay caballos participantes</td></tr>';
+                document.getElementById('cantCaballos').textContent = '0';
+                return;
+            }
+
+            document.getElementById('cantCaballos').textContent = lista.length;
+
+            lista.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                const nro = p.numeroRegistro || p.nroRegistro || (idx + 1);
+                const nombreCaballo = (p.caballo && p.caballo.nombre) || 'Desconocido';
+                const dividendo = p.dividendo < 0 ? 'N/A' : p.dividendo;
+                const totalApostado = p.totalApostado || 0;
+                const cantApuestas = p.cantApuestas || 0;
+
+                tr.innerHTML = `
+          <td>${nro}</td>
+          <td>${nombreCaballo}</td>
+          <td>${formatMoney(dividendo)}</td>
+          <td>${formatMoney(totalApostado)}</td>
+          <td>${cantApuestas}</td>
+        `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Rellenar select de caballos
+        function rellenarSelect(lista) {
+            const select = document.getElementById('caballoGanador');
+            // Mantener la opción vacía
+            const opcionVacia = select.options[0];
+            select.innerHTML = '';
+            select.appendChild(opcionVacia);
+
+            if (!lista || lista.length === 0) return;
+
+            lista.forEach((p) => {
+                const nombreCaballo = (p.caballo && p.caballo.nombre) || 'Desconocido';
+                const nroReg = p.numeroRegistro || p.nroRegistro || '?';
+
+                const option = document.createElement('option');
+                option.value = nroReg;
+                option.textContent = `${nroReg} - ${nombreCaballo}`;
+                select.appendChild(option);
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('volverBtn').addEventListener('click', () => {
+            dispatcher.submit('/gestionarCarrera/volverTablero');
+        });
+
+        document.getElementById('abrirCarreraBtn').addEventListener('click', () => {
+            dispatcher.submit('/gestionarCarrera/abrirCarrera');
+        });
+
+        document.getElementById('cerrarCarreraBtn').addEventListener('click', () => {
+            dispatcher.submit('/gestionarCarrera/cerrarCarrera');
+        });
+
+        document.getElementById('finalizarBtn')
+            .addEventListener('click', () => {
+
+                const nroRegistro =
+                    document.getElementById('caballoGanador').value;
+
+                if (!nroRegistro) {
+                    mostrarError(
+                        'Debe seleccionar un caballo ganador');
+                    return;
+                }
+
+                dispatcher.submit(
+                    '/gestionarCarrera/finalizarCarrera',
+                    { nroRegistro: nroRegistro }
+                );
+            });
+
+        // Close error button
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('errorClose');
+            const area = document.getElementById('errorArea');
+            if (btn && area) btn.addEventListener('click', () => { area.style.display = 'none'; });
+        });
+
+        // Start view
+        dispatcher.startView(view);
+    </script>
+</body>
+
+</html>

@@ -101,13 +101,13 @@ public class Jornada {
         return listaRet;
     }
 
-    public Carrera buscarCarrera(int id) throws CarreraNoValidaException{
+    public Carrera buscarCarrera(int id){
         for(Carrera c : this.carreras){
             if(c.getId() == id){
                 return c;
             }
         }
-        throw new CarreraNoValidaException("No existe una carrera con ese ID");
+        return null;
     }
 
     public Participacion buscarParticipacion(int nro) {

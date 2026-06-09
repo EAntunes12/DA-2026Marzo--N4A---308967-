@@ -259,13 +259,13 @@ public class DatosPrueba {
                                 "Copa Juvenil",
                                 LocalDate.now());
 
-                agregarParticipantes(carrera1, c1, c2, c3);
-                agregarParticipantes(carrera2, c3, c4, c5);
-                agregarParticipantes(carrera3, c1, c5, c6);
-                agregarParticipantes(carrera4, c2, c4, c6);
-                agregarParticipantes(carrera5, c1, c3, c5);
-                agregarParticipantes(carrera6, c2, c3, c4);
-                agregarParticipantes(carrera7, c4, c5, c6);
+                agregarParticipantes(carrera1, c1, c2, c3, c4, c5);
+                agregarParticipantes(carrera2, c2, c4, c6);
+                agregarParticipantes(carrera3, c1, c2, c3, c4, c5, c6);
+                agregarParticipantes(carrera4, c1, c3, c5, c6);
+                agregarParticipantes(carrera5, c2, c3, c4, c5);
+                agregarParticipantes(carrera6, c1, c2, c3, c4, c5);
+                agregarParticipantes(carrera7, c3, c4, c6);
 
                 // ABIERTA SIN APUESTAS
                 carrera1.abrir();
@@ -285,17 +285,17 @@ public class DatosPrueba {
                 carrera5.abrir();
                 generarApuestas(carrera5);
                 carrera5.cerrar();
-                carrera5.setGanador(
-                                carrera5.getParticipaciones().get(0));
-                carrera5.finalizar();
+                carrera5.finalizar(carrera5.getParticipaciones().get(0));
+                // carrera5.setGanador(carrera5.getParticipaciones().get(0));
+                // carrera5.finalizar();
 
                 // FINALIZADA
                 carrera6.abrir();
                 generarApuestas(carrera6);
                 carrera6.cerrar();
-                carrera6.setGanador(
-                                carrera6.getParticipaciones().get(1));
-                carrera6.finalizar();
+                carrera6.finalizar(carrera6.getParticipaciones().get(1));
+                // carrera6.setGanador(carrera6.getParticipaciones().get(1));
+                // carrera6.finalizar();
 
                 // DEFINIDA (sin abrir)
                 // carrera7 queda como viene del constructor
@@ -344,14 +344,17 @@ public class DatosPrueba {
                 carrera4.cerrar();
                 carrera5.cerrar();
 
-                carrera4.setGanador(
-                                carrera4.getParticipaciones().get(0));
+                carrera4.finalizar(carrera4.getParticipaciones().get(0));
+                carrera5.finalizar(carrera5.getParticipaciones().get(1));
 
-                carrera5.setGanador(
-                                carrera5.getParticipaciones().get(1));
+                // carrera4.setGanador(
+                //                 carrera4.getParticipaciones().get(0));
 
-                carrera4.finalizar();
-                carrera5.finalizar();
+                // carrera5.setGanador(
+                //                 carrera5.getParticipaciones().get(1));
+
+                // carrera4.finalizar();
+                // carrera5.finalizar();
 
                 jornadaPasada.agregarCarrera(carrera4);
                 jornadaPasada.agregarCarrera(carrera5);
