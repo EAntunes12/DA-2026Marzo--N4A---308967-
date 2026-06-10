@@ -257,4 +257,28 @@ public class Carrera {
     public double getComision() {
         return getTotalApostado() * Fachada.getInstancia().getComision();
     }
+
+    public double getTotalApostadoPorJugador(String nombreCompleto) {
+        double total = 0;
+        for(Apuesta a : this.apuestas){
+            if(a.esDeJugador(nombreCompleto)){
+                total += a.getValor();
+            }
+        }
+        return total;
+    }
+
+    public double getTotalGanadoPorJugador(String nombreCompleto) {
+        if (ganador == null) {
+            return 0;
+        }
+
+        double total = 0;
+        for(Apuesta a : this.apuestas){
+            if(a.esDeJugador(nombreCompleto) && a.esGanadora(ganador)){
+                total += a.getValor();
+            }
+        }
+        return total;
+    }
 }

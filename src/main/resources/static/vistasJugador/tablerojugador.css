@@ -1,0 +1,29 @@
+.root{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#e6eef6; background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #0f3460 100%); min-height:100vh; padding:20px; display:flex; flex-direction:column}
+.navbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding:14px;border-radius:10px;background-color:#12202a;box-shadow:0 6px 18px rgba(0,0,0,0.35);}
+.playerCard{background:#12202a;padding:12px 16px;border-radius:8px;display:flex;gap:18px;align-items:center;box-shadow:0 2px 0 rgba(255,255,255,0.02) inset}
+.playerInfo{display:flex;flex-direction:column}
+.playerName{font-weight:700;font-size:18px}
+.balances{display:flex;gap:12px;margin-top:6px}
+.badge{background:#0b2b2f;padding:6px 10px;border-radius:6px;font-size:13px;color:#9ee3c7}
+.actions{display:flex;gap:8px;align-items:center}
+.btn{background:linear-gradient(135deg,#FFC107 0%, #FFB300 100%);color:#0F2438;padding:8px 12px;border-radius:12px;border:none;cursor:pointer;font-weight:700}
+.grid{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.card{background:linear-gradient(180deg,#14232b,#0f1b22);padding:14px;border-radius:10px;min-width:300px;flex:1 1 300px}
+.cardHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cardTitle{font-weight:700}
+.tableMini{width:100%;border-collapse:collapse}
+.tableMini th{font-weight:700;text-align:left;color:#9fb6c7;font-size:13px}
+.tableMini td{padding:6px 0;border-top:1px dashed rgba(255,255,255,0.03);font-size:13px;color:#d6e8f2}
+.tipoApuestas{display:flex;gap:8px;margin:10px 0}
+.tipoBtn{background:#0b1d22;color:#aee3d0;padding:6px 10px;border-radius:6px;border:none;cursor:pointer}
+.selected{background:#f6c84b;color:#07171a}
+.apuestasTable{width:100%;border-collapse:collapse;margin-top:12px}
+.apuestasTable th{color:#8fa7b7;text-align:left;padding:8px}
+.apuestasTable td{padding:8px;border-top:1px solid rgba(255,255,255,0.03)}
+.status{padding:6px 8px;border-radius:8px;font-size:12px}
+.status.pending{background:#123b3a;color:#bdeede}
+.status.done{background:#123b18;color:#bff7c6}
+.errorArea{display:none;background:#3b1a1a;color:#ffd2d2;padding:10px;border-radius:6px;margin-bottom:12px}
+.small{font-size:12px;color:#9fb6c7}
+.footerTotals{display:flex;gap:18px;align-items:center;margin-top:18px}
+.totalBox{background:#071418;padding:10px;border-radius:8px;color:#9ee3c7}

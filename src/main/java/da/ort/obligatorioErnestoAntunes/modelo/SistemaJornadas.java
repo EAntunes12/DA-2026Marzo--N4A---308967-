@@ -62,13 +62,12 @@ public class SistemaJornadas {
         return actual;
     }
 
-    public List<Carrera> getCarrerasDisponibles() {
+    public List<Carrera> getCarrerasDisponibles(){
         List<Carrera> listaRet = new ArrayList<>();
 
         for (Jornada j : this.jornadas) {
             listaRet.addAll(j.getCarrerasDisponibles());
         }
-
         return listaRet;
     }
 
@@ -82,7 +81,7 @@ public class SistemaJornadas {
         return listaRet;
     }
 
-    public List<Apuesta> getApuestasPorJugador(String jugador) {
+    public List<Apuesta> getApuestasPorJugador(String jugador){
         List<Apuesta> listaRet = new ArrayList<>();
         List<Apuesta> apuestas = getTodasLasApuestas();
 
@@ -153,7 +152,8 @@ public class SistemaJornadas {
         Participacion ganador = buscarParticipacion(nroRegistroPart);
         carrera.finalizar(ganador);
 
-        //Le paga a los jugadores que apostaron al ganador de la carrera, pero no estoy 100% seguro de que funcione bien.
+        // Le paga a los jugadores que apostaron al ganador de la carrera, pero no estoy
+        // 100% seguro de que funcione bien.
         for (Apuesta a : carrera.getApuestas()) {
             if (a.esGanadora(ganador)) {
 
@@ -191,5 +191,24 @@ public class SistemaJornadas {
     public double getTotalComisionJornada(LocalDate fechaJornada) throws JornadaNoValidaException {
         Jornada j = buscarJornadaPorFecha(fechaJornada);
         return j.getTotalComision();
+    }
+
+    public double getTotalApostadoPorJugador(String nombreCompleto) {
+        double total = 0;
+        for (Jornada j : this.jornadas) {
+            total += j.getTotalApostadoPorJugador(nombreCompleto);
+        }
+
+        return total;
+    }
+
+
+    //aca repito mucho coddigo pero no se como implementarlo de otra manera
+    public double getTotalGanadoPorJugador(String nombreCompleto) {
+        double total = 0;
+            for (Jornada j : this.jornadas) {
+                total += j.getTotalGanadoPorJugador(nombreCompleto);
+            }
+        return total;
     }
 }

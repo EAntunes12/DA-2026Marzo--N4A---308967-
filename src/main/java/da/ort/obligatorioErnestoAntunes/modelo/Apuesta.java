@@ -81,6 +81,9 @@ public class Apuesta {
 
     public boolean esGanadora(Participacion ganador){
         return this.participacion.getNumeroRegistro() == ganador.getNumeroRegistro();
-        //return this.participacion == ganador;
+    }
+
+    public boolean esDeJugador(String nombreCompleto) {
+        return this.jugador.getNombreCompleto().equals(nombreCompleto);
     }
 }

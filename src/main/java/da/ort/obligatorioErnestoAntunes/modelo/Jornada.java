@@ -148,4 +148,20 @@ public class Jornada {
         return total;
     }
 
+    public double getTotalApostadoPorJugador(String nombreCompleto) {
+        double total = 0;
+        for(Carrera c : this.carreras){
+            total += c.getTotalApostadoPorJugador(nombreCompleto);
+        }
+        return total;
+    }
+
+    public double getTotalGanadoPorJugador(String nombreCompleto) {
+        double total = 0;
+        for(Carrera c : this.carreras){
+            total += c.getTotalGanadoPorJugador(nombreCompleto);
+        }
+        return total;
+    }
+
 }

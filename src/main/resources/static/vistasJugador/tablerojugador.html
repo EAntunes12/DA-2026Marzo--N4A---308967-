@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tablero Jugador</title>
+  <link rel="stylesheet" href="/vistasJugador/tableroJugador.css">
+  <style>/* fallback fonts if needed */</style>
+</head>
+<body class="root">
+
+  <div id="errorArea" class="errorArea"><span id="errorMsg"></span></div>
+
+  <nav class="navbar">
+    <div class="playerCard">
+      <div class="playerInfo">
+        <div class="playerName" id="playerName">Jugador</div>
+        <div class="balances">
+          <div class="badge">Saldo: <span id="saldo">-</span></div>
+          <div class="badge">Total Apostado: <span id="totalApostado">-</span></div>
+          <div class="badge">Total Ganado: <span id="totalGanado">-</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btnLogout" class="btn">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <h3 style="color:#a7c6d6">Carreras Disponibles para Apostar</h3>
+
+  <div class="grid" id="carrerasGrid">
+    <!-- cards generated dynamically -->
+  </div>
+
+  <div class="small">Tipos de Apuesta disponibles</div>
+  <div class="tipoApuestas" id="tiposApuestaArea"></div>
+
+  <h3 style="color:#a7c6d6">Mis Apuestas</h3>
+  <table class="apuestasTable" id="tablaApuestas">
+    <thead>
+      <tr><th>Fecha</th><th>N° Carrera</th><th>Caballo</th><th>Monto</th><th>Tipo</th><th>Estado</th></tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="6" class="small">No hay apuestas</td></tr>
+    </tbody>
+  </table>
+
+  
+
+  <script type="module">
+    import dispatcher from '/CommandDispatcher.js';
+
+    function mostrarError(msg){
+      const area = document.getElementById('errorArea');
+      const span = document.getElementById('errorMsg');
+      span.textContent = typeof msg === 'string' ? msg : (msg?.message || JSON.stringify(msg));
+      area.style.display = 'block';
+      if(area._hideTimeout) clearTimeout(area._hideTimeout);
+      area._hideTimeout = setTimeout(()=> area.style.display='none',6000);
+    }
+
+    const view = dispatcher.registerView('tableroJugador', {
+      urlInicio: '/tableroJugador/vistaConectada',
+      onError: (s,t) => mostrarError(`Error ${s}: ${t}`),
+      onException: (m) => mostrarError(m)
+    });
+
+    // Handler: redirect to login if access denied
+    view.handler('accesoNoPermitido', (dest)=> { window.location.href = dest; });
+    view.handler('Vista apostar', (dest)=> { window.location.href = dest; });
+
+    view.handler('Datos del jugador', (nombre) => {
+      document.getElementById('playerName').textContent = nombre || 'Jugador';
+    });
+
+    // Nuevo handler para mostrar el saldo enviado por el presentador
+    view.handler('Saldo', (v) => {
+      const el = document.getElementById('saldo');
+      el.textContent = formatMoney(v);
+    });
+
+    view.handler('Total apostado', (v) => {
+      const el = document.getElementById('totalApostado');
+      const txt = formatMoney(v);
+      el.textContent = txt;
+    });
+
+    view.handler('Total ganado', (v) => {
+      const el = document.getElementById('totalGanado');
+      const txt = formatMoney(v);
+      el.textContent = txt;
+    });
+
+    view.handler('Modalidades de apuesta', (lista) => {
+      const area = document.getElementById('tiposApuestaArea');
+      area.innerHTML='';
+      if(!Array.isArray(lista)) lista = lista ? [lista] : [];
+      lista.forEach(m => {
+        const b = document.createElement('button');
+        b.className='tipoBtn';
+        const nombre = typeof m === 'string' ? m : (m?.nombre || m?.toString());
+        b.textContent = nombre;
+        b.dataset.modalidad = nombre;
+        b.addEventListener('click', ()=>{
+          document.querySelectorAll('.tipoBtn').forEach(x=>x.classList.remove('selected'));
+          b.classList.add('selected');
+        });
+        area.appendChild(b);
+      });
+    });
+
+    view.handler('Carreras disponibles', (carreras) => {
+      const grid = document.getElementById('carrerasGrid');
+      grid.innerHTML = '';
+      if(!Array.isArray(carreras)) carreras = carreras ? [carreras] : [];
+      carreras.forEach(c => {
+        const card = document.createElement('div'); card.className='card';
+        const header = document.createElement('div'); header.className='cardHeader';
+        const title = document.createElement('div'); title.className='cardTitle';
+        title.textContent = `${c.numero || ''} ${c.nombre || ''}`;
+        const date = document.createElement('div'); date.className='small'; date.textContent = c.fecha || '';
+        header.appendChild(title); header.appendChild(date);
+        card.appendChild(header);
+
+        const table = document.createElement('table'); table.className='tableMini';
+        const thead = document.createElement('thead'); thead.innerHTML = '<tr><th>N°</th><th>Caballo</th><th style="text-align:right">Dividendo</th></tr>';
+        table.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        const parts = c.participaciones || c.participaciones || [];
+        (parts).forEach(p => {
+          const tr = document.createElement('tr');
+          const nro = document.createElement('td'); nro.textContent = p.nroRegistro || p.numeroRegistro || p.nro || '';
+          const caballo = document.createElement('td');
+          const caballoNombre = (p.caballo && (p.caballo.nombre || p.caballo.getNombre)) ? (p.caballo.nombre || p.caballo.getNombre) : (p.caballo || '');
+          caballo.textContent = caballoNombre;
+          const divi = document.createElement('td'); divi.style.textAlign='right';
+          const rawDiv = p.dividendo !== undefined ? p.dividendo : (p.getDividendo !== undefined ? p.getDividendo : null);
+          if(rawDiv === -1 || rawDiv === '-1'){
+            divi.textContent = 'N/A';
+          } else {
+            divi.textContent = formatMoney(rawDiv);
+          }
+          tr.appendChild(nro); tr.appendChild(caballo); tr.appendChild(divi);
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        card.appendChild(table);
+
+        const foot = document.createElement('div'); foot.style.marginTop='10px';
+        const btn = document.createElement('button'); btn.className='btn'; btn.textContent='Apostar';
+        btn.addEventListener('click', ()=>{
+          const sel = document.querySelector('.tipoBtn.selected');
+          const modalidad = sel ? sel.dataset.modalidad : null;
+          if(!modalidad){ mostrarError('Seleccione una modalidad antes de apostar'); return; }
+          dispatcher.submit('/tableroJugador/apostar', { idCarrera: c.id, modalidad });
+        });
+        foot.appendChild(btn);
+        card.appendChild(foot);
+
+        grid.appendChild(card);
+      });
+    });
+
+    view.handler('Apuestas del jugador', (apuestas) => {
+      const tbody = document.getElementById('tablaApuestas').querySelector('tbody');
+      tbody.innerHTML='';
+      if(!Array.isArray(apuestas)) apuestas = apuestas ? [apuestas] : [];
+      if(apuestas.length===0){ tbody.innerHTML='<tr><td colspan="6" class="small">No hay apuestas</td></tr>'; return; }
+      apuestas.forEach(a => {
+        const tr = document.createElement('tr');
+        const fecha = document.createElement('td'); fecha.textContent = a.fecha || a.fechaOperacion || '-';
+        const nro = document.createElement('td'); try{ nro.textContent = a.participacion?.carrera?.numero || a.participacion?.getCarrera?.numero || a.participacion?.getCarrera?.numero || a.participacion?.numeroRegistro || a.participacion?.nroRegistro || ''; }catch(e){ nro.textContent=''; }
+        const caballo = document.createElement('td'); caballo.textContent = a.participacion?.caballo?.nombre || a.participacion?.caballo || '';
+        const monto = document.createElement('td'); monto.textContent = formatMoney(a.valor);
+        const tipo = document.createElement('td'); tipo.textContent = a.modalidad?.nombre || (a.modalidad?String(a.modalidad):'');
+        const estado = document.createElement('td'); estado.innerHTML = '<span class="status done">Finalizada</span>';
+        tr.appendChild(fecha); tr.appendChild(nro); tr.appendChild(caballo); tr.appendChild(monto); tr.appendChild(tipo); tr.appendChild(estado);
+        tbody.appendChild(tr);
+      });
+    });
+
+    // utility
+    function formatMoney(v){
+      if(v===null||v===undefined) return '-';
+      if(typeof v==='number') return '$'+new Intl.NumberFormat('es-UY',{maximumFractionDigits:0}).format(Math.round(v));
+      const cleaned = String(v).replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(/,/g,'.');
+      const num = parseFloat(cleaned);
+      if(!isNaN(num)) return '$'+new Intl.NumberFormat('es-UY',{maximumFractionDigits:0}).format(Math.round(num));
+      return String(v);
+    }
+
+    // logout
+    document.getElementById('btnLogout').addEventListener('click', ()=> dispatcher.submit('/tableroJugador/logout'));
+
+    dispatcher.startView(view);
+  </script>
+</body>
+</html>

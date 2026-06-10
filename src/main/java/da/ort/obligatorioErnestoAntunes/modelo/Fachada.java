@@ -81,7 +81,7 @@ public class Fachada {
             return sistemaJornadas.anteriorJornada(actual);
         }
 
-        public List<Carrera> getCarrerasDisponibles() {
+        public List<Carrera> getCarrerasDisponibles(){
             return sistemaJornadas.getCarrerasDisponibles();
         }
 
@@ -139,6 +139,14 @@ public class Fachada {
 
         public double getTotalComisionJornada(LocalDate fechaJornada) throws JornadaNoValidaException {
             return sistemaJornadas.getTotalComisionJornada(fechaJornada);
+        }
+
+        public double getTotalApostadoPorJugador(String nombreCompleto) {
+            return sistemaJornadas.getTotalApostadoPorJugador(nombreCompleto);
+        }
+
+        public double getTotalGanadoPorJugador(String nombreCompleto) {
+            return sistemaJornadas.getTotalGanadoPorJugador(nombreCompleto);
         }
         
         

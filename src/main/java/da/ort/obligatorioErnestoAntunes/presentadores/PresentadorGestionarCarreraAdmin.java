@@ -74,7 +74,7 @@ public class PresentadorGestionarCarreraAdmin {
     @PostMapping("/finalizarCarrera")
     public Commands finalizarCarrera(@RequestParam int nroRegistro) throws CarreraNoValidaException, ParticipacionNoValidaException{
         if(carrera != null){
-            fachada.finalizarCarrera(carrera.getId(), nroRegistro);  //TODO  FALTA QUE finalizarCarrera LE PAGUE A LOS QUE APOSTARON AL GANADOR
+            fachada.finalizarCarrera(carrera.getId(), nroRegistro);  //paga a lso que apostaron pero capaz que hay que revisarlo
             carrera = CarreraDTO.from(fachada.buscarCarrera(carrera.getId()));
 
             

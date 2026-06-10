@@ -78,7 +78,6 @@ public class PresentadorTableroAdmin {
     @PostMapping("/gestionarCarrera")
     public Commands gestionarCarrera(@RequestParam int carrera, @SessionAttribute(name="administrador",required=false) AdminDTO adminDTO, HttpSession session) throws CarreraNoValidaException{
         if(adminDTO != null){
-            System.out.println("ID recibido: " + carrera);
             CarreraDTO carreraDTO = CarreraDTO.from(fachada.buscarCarrera(carrera));
             session.setAttribute("carreraSeleccionada", carreraDTO);
             return Commands.create(vistaGestionarCarrera());
