@@ -281,4 +281,23 @@ public class Carrera {
         }
         return total;
     }
+
+    public Participacion buscarParticipacion(String nombreCaballo) {
+        for (Participacion p : participaciones) {
+            if (p.getCaballo().getNombre().equals(nombreCaballo)) {
+                return p;
+            }
+        }
+
+        return null;
+    }
+
+    public Apuesta buscarApuesta(int idApuesta) {
+        for(Apuesta a : this.apuestas){
+            if(a.getId() == idApuesta){
+                return a;
+            }
+        }
+        return null;
+    }
 }

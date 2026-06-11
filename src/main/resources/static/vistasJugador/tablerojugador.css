@@ -14,12 +14,19 @@
 .tableMini{width:100%;border-collapse:collapse}
 .tableMini th{font-weight:700;text-align:left;color:#9fb6c7;font-size:13px}
 .tableMini td{padding:6px 0;border-top:1px dashed rgba(255,255,255,0.03);font-size:13px;color:#d6e8f2}
+.tableMini tbody tr{cursor:pointer}
+/* fila seleccionada - color más claro para destacar el caballo elegido */
+.tableMini tbody tr.partSelected{background:linear-gradient(90deg, rgba(246,200,75,0.16), rgba(246,200,75,0.04));}
+.tableMini tbody tr.partSelected td{color:#07171a;font-weight:700}
 .tipoApuestas{display:flex;gap:8px;margin:10px 0}
 .tipoBtn{background:#0b1d22;color:#aee3d0;padding:6px 10px;border-radius:6px;border:none;cursor:pointer}
 .selected{background:#f6c84b;color:#07171a}
-.apuestasTable{width:100%;border-collapse:collapse;margin-top:12px}
-.apuestasTable th{color:#8fa7b7;text-align:left;padding:8px}
-.apuestasTable td{padding:8px;border-top:1px solid rgba(255,255,255,0.03)}
+.apuestasTable{width:100%;border-collapse:collapse;margin-top:12px;background:linear-gradient(180deg,#14232b,#0f1b22);border-radius:10px;padding:12px;color:#d6e8f2}
+.apuestasTable th{color:#9fb6c7;text-align:left;padding:8px}
+.apuestasTable td{padding:8px;border-top:1px solid rgba(255,255,255,0.03);background:transparent}
+/* make the table body rows inherit rounded container look */
+.apuestasTable thead tr th:first-child{border-top-left-radius:8px}
+.apuestasTable thead tr th:last-child{border-top-right-radius:8px}
 .status{padding:6px 8px;border-radius:8px;font-size:12px}
 .status.pending{background:#123b3a;color:#bdeede}
 .status.done{background:#123b18;color:#bff7c6}

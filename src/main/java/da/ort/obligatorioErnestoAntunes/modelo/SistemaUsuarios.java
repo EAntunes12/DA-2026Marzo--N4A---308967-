@@ -65,24 +65,47 @@ public class SistemaUsuarios {
         usuarios.add(u);
     }
 
-    public void logout(String nombre) throws UsuarioInvalidoException {
-        Usuario usuario = buscarUsuario(nombre);
-        if (usuario == null) {
-            throw new UsuarioInvalidoException("El usuario no existe.");
-        }
+    public void logout(String nombreCompleto) throws UsuarioInvalidoException {
+        Usuario usuario = buscarUsuario(nombreCompleto);
+        // if (usuario == null) {
+        //     throw new UsuarioInvalidoException("El usuario no existe.");
+        // }
         if (!usuario.isLogueado()) {
             throw new UsuarioInvalidoException("El usuario no está logueado.");
         }
         usuario.setLogueado(false);
     }
 
-    private Usuario buscarUsuario(String nombre){
+    public Usuario buscarUsuario(String nombreCompleto) throws UsuarioInvalidoException{
         for(Usuario u : this.usuarios){
-            if(u.getNombre().equals(nombre)){
+            if(u.getNombreCompleto().equals(nombreCompleto)){
                 return u;
             }
         }
 
-        return null;
+        throw new UsuarioInvalidoException("El usuario no existe.");
+    }
+
+    public boolean buscarPassword(String pass, String nombreCompleto) throws UsuarioInvalidoException {
+        Jugador jugador = (Jugador) buscarUsuario(nombreCompleto);
+        return jugador.getPassword().equals(pass);
+    }
+
+    public boolean montoValido(double valorApuesta, String nombreCompleto) throws UsuarioInvalidoException {
+        Jugador j = (Jugador) buscarUsuario(nombreCompleto);
+        if(j.getSaldo() >= valorApuesta){
+            return true;
+        }
+        throw new UsuarioInvalidoException("El monto ingresado es mayor al saldo en la cuenta.");
+    }
+
+    public Jugador buscarJugador(String nombreCompleto) throws UsuarioInvalidoException{
+        for(Usuario u : this.usuarios){
+            if(u instanceof Jugador && u.getNombreCompleto().equals(nombreCompleto)){
+                return (Jugador)u;
+            }
+        }
+
+        throw new UsuarioInvalidoException("El usuario no existe.");
     }
 }

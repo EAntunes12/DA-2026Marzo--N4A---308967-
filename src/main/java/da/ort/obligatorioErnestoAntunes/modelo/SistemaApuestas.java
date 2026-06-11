@@ -3,7 +3,9 @@ package da.ort.obligatorioErnestoAntunes.modelo;
 import java.util.ArrayList;
 import java.util.List;
 
+import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CaballoNoValidoException;
+import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ModalidadNoValidaException;
 
 public class SistemaApuestas {
@@ -53,5 +55,27 @@ public class SistemaApuestas {
         c.validar();
         existeCaballo(c);
         caballos.add(c);
+    }
+
+    public Apuesta crearApuesta(double valorApuesta, Jugador jugador, Participacion part, String mod, Carrera carrera) throws ModalidadNoValidaException, ApuestaNoValidaException, CarreraNoValidaException {
+        Modalidad modalidad = buscarModalidad(mod);
+        Apuesta apuesta = new Apuesta(valorApuesta, jugador, part, modalidad);
+        carrera.agregarApuesta(apuesta);
+        jugador.descontarSaldo(valorApuesta);
+        carrera.recalcularDividendos();               
+        return apuesta;
+    }
+
+    private Modalidad buscarModalidad(String mod) throws ModalidadNoValidaException {
+        for(Modalidad m : this.modalidades){
+            if(m.getNombre().equals(mod)){
+                return m;
+            }
+        }
+        throw new ModalidadNoValidaException("No existe la modalidad");
+    }
+
+    public double getPremioSiEsGanadora(Carrera c, Apuesta a) {
+        return a.getPremioSiEsganadora(c);
     }
 }

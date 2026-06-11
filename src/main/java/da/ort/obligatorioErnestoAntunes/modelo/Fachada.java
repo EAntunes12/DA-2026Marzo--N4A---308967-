@@ -65,8 +65,8 @@ public class Fachada {
             sistemaJornadas.agregarJornada(j);
         }
         
-        public void logout(String nombre) throws UsuarioInvalidoException{
-            sistemaUsuarios.logout(nombre);
+        public void logout(String nombreCompleto) throws UsuarioInvalidoException{
+            sistemaUsuarios.logout(nombreCompleto);
         }
 
         public Jornada obtenerJornadaActual() {
@@ -148,7 +148,45 @@ public class Fachada {
         public double getTotalGanadoPorJugador(String nombreCompleto) {
             return sistemaJornadas.getTotalGanadoPorJugador(nombreCompleto);
         }
+
+        public Participacion buscarParticipacion(String nombreCaballo) throws ParticipacionNoValidaException{
+            return sistemaJornadas.buscarParticipacion(nombreCaballo);
+        }
+
+        public Apuesta crearApuesta(double valorApuesta, String nombreCompleto, String nombreCaballo, String modalidad, int idCarrera) throws UsuarioInvalidoException, ParticipacionNoValidaException, ModalidadNoValidaException, ApuestaNoValidaException, CarreraNoValidaException {
+            Jugador jugador = (Jugador)buscarUsuario(nombreCompleto);
+            Participacion part = buscarParticipacion(nombreCaballo);
+            Carrera carrera = buscarCarrera(idCarrera);
+            return sistemaApuestas.crearApuesta(valorApuesta, jugador, part, modalidad, carrera);
+        }
+
+        public Usuario buscarUsuario(String nombre) throws UsuarioInvalidoException {
+            return sistemaUsuarios.buscarUsuario(nombre);
+        }
+
+        public boolean buscarPassword(String pass, String nombreCompleto) throws UsuarioInvalidoException {
+            return sistemaUsuarios.buscarPassword(pass, nombreCompleto);
+        }
+
+        public Apuesta buscarApuesta(int idApuesta) throws ApuestaNoValidaException{
+            return sistemaJornadas.buscarApuesta(idApuesta);
+        }
+
+        public double getPremioSiEsGanadora(int idCarrera, int idApuesta) throws CarreraNoValidaException, ApuestaNoValidaException {
+            Carrera c = buscarCarrera(idCarrera);
+            Apuesta a = buscarApuesta(idApuesta);
+            return sistemaApuestas.getPremioSiEsGanadora(c, a);
+        }
+
+        public boolean montoValido(double valorApuesta, String nombreCompleto) throws UsuarioInvalidoException {
+            return sistemaUsuarios.montoValido(valorApuesta, nombreCompleto);
+        }
+
+        public Jugador buscarJugador(String nombreCompleto) throws UsuarioInvalidoException {
+            return sistemaUsuarios.buscarJugador(nombreCompleto);
+        }
         
+
         
 
         

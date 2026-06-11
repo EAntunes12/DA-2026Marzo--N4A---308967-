@@ -29,14 +29,15 @@ public class Jornada {
     }
 
     public void agregarCarrera(Carrera c) throws CarreraNoValidaException {
-        if (c == null) throw new CarreraNoValidaException("La carrera no es valida");
+        if (c == null)
+            throw new CarreraNoValidaException("La carrera no es valida");
 
         c.setNumero(carreras.size() + 1);
         c.validar();
         existeCarrera(c);
 
         carreras.add(c);
-    }      
+    }
 
     private void existeCarrera(Carrera c) throws CarreraNoValidaException {
         for (Carrera carrera : carreras) {
@@ -49,17 +50,17 @@ public class Jornada {
         }
     }
 
-    public void validar() throws JornadaNoValidaException{
-        if(fecha == null){
+    public void validar() throws JornadaNoValidaException {
+        if (fecha == null) {
             throw new JornadaNoValidaException("La fecha no puede ser vacia");
         }
     }
 
     public List<Carrera> getCarrerasDisponibles() {
         List<Carrera> listaRet = new ArrayList<>();
-        
-        for(Carrera c : this.carreras){
-            if(c.sePuedeApostar()){
+
+        for (Carrera c : this.carreras) {
+            if (c.sePuedeApostar()) {
                 listaRet.add(c);
             }
         }
@@ -70,8 +71,8 @@ public class Jornada {
     public List<Apuesta> getApuestas() {
         List<Apuesta> listaRet = new ArrayList<>();
 
-        for(Carrera c : this.carreras){
-            c.getApuestas();
+        for (Carrera c : this.carreras) {
+            listaRet.addAll(c.getApuestas());
         }
 
         return listaRet;
@@ -80,8 +81,8 @@ public class Jornada {
     public List<Carrera> getCarrerasNoFinalizadas() {
         List<Carrera> listaRet = new ArrayList<>();
 
-        for(Carrera c : this.carreras){
-            if(!c.estaFinalizada()){
+        for (Carrera c : this.carreras) {
+            if (!c.estaFinalizada()) {
                 listaRet.add(c);
             }
         }
@@ -92,8 +93,8 @@ public class Jornada {
     public List<Carrera> getCarrerasFinalizadas() {
         List<Carrera> listaRet = new ArrayList<>();
 
-        for(Carrera c : this.carreras){
-            if(c.estaFinalizada()){
+        for (Carrera c : this.carreras) {
+            if (c.estaFinalizada()) {
                 listaRet.add(c);
             }
         }
@@ -101,9 +102,9 @@ public class Jornada {
         return listaRet;
     }
 
-    public Carrera buscarCarrera(int id){
-        for(Carrera c : this.carreras){
-            if(c.getId() == id){
+    public Carrera buscarCarrera(int id) {
+        for (Carrera c : this.carreras) {
+            if (c.getId() == id) {
                 return c;
             }
         }
@@ -111,10 +112,10 @@ public class Jornada {
     }
 
     public Participacion buscarParticipacion(int nro) {
-        for(Carrera c : this.carreras){
+        for (Carrera c : this.carreras) {
             Participacion p = c.buscarParticipacion(nro);
 
-            if(p!=null){
+            if (p != null) {
                 return p;
             }
         }
@@ -122,27 +123,27 @@ public class Jornada {
         return null;
     }
 
-    public double getTotalApostado(){
+    public double getTotalApostado() {
         double total = 0;
-        for(Carrera c : this.carreras){
+        for (Carrera c : this.carreras) {
             total += c.getTotalApostado();
         }
 
         return total;
     }
 
-    public double getTotalPagado(){
+    public double getTotalPagado() {
         double total = 0;
-        for(Carrera c : this.carreras){
+        for (Carrera c : this.carreras) {
             total += c.getTotalPagado();
         }
 
         return total;
     }
 
-    public double getTotalComision(){
+    public double getTotalComision() {
         double total = 0;
-        for(Carrera c : this.carreras){
+        for (Carrera c : this.carreras) {
             total += c.getComision();
         }
         return total;
@@ -150,7 +151,7 @@ public class Jornada {
 
     public double getTotalApostadoPorJugador(String nombreCompleto) {
         double total = 0;
-        for(Carrera c : this.carreras){
+        for (Carrera c : this.carreras) {
             total += c.getTotalApostadoPorJugador(nombreCompleto);
         }
         return total;
@@ -158,10 +159,34 @@ public class Jornada {
 
     public double getTotalGanadoPorJugador(String nombreCompleto) {
         double total = 0;
-        for(Carrera c : this.carreras){
+        for (Carrera c : this.carreras) {
             total += c.getTotalGanadoPorJugador(nombreCompleto);
         }
         return total;
+    }
+
+    public Participacion buscarParticipacion(String nombreCaballo) {
+        for (Carrera c : carreras) {
+            Participacion p = c.buscarParticipacion(nombreCaballo);
+
+            if (p != null) {
+                return p;
+            }
+        }
+
+        return null;
+    }
+
+    public Apuesta buscarApuesta(int idApuesta) {
+        for(Carrera c : this.carreras){
+            Apuesta apuesta = c.buscarApuesta(idApuesta);
+
+            if(apuesta != null){
+                return apuesta;
+            }
+        }
+
+        return null;
     }
 
 }

@@ -87,7 +87,7 @@ public class PresentadorTableroAdmin {
     
     @PostMapping("/logout")
     public Commands logout(HttpSession session) throws UsuarioInvalidoException{
-        fachada.logout(((AdminDTO)session.getAttribute("administrador")).getNombre());
+        fachada.logout(((AdminDTO)session.getAttribute("administrador")).getNombreCompleto());
         session.invalidate();
         return Commands.create(accesoNoPermitido());
     }

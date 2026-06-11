@@ -142,6 +142,14 @@
           } else {
             divi.textContent = formatMoney(rawDiv);
           }
+          // make row selectable and store caballo name and carrera id
+          tr.dataset.caballo = caballoNombre;
+          tr.dataset.carreraId = c.id;
+          tr.addEventListener('click', () => {
+            // deselect todas las filas en la vista (selección global)
+            document.querySelectorAll('.tableMini tbody tr.partSelected').forEach(r => r.classList.remove('partSelected'));
+            tr.classList.add('partSelected');
+          });
           tr.appendChild(nro); tr.appendChild(caballo); tr.appendChild(divi);
           tbody.appendChild(tr);
         });
@@ -151,10 +159,21 @@
         const foot = document.createElement('div'); foot.style.marginTop='10px';
         const btn = document.createElement('button'); btn.className='btn'; btn.textContent='Apostar';
         btn.addEventListener('click', ()=>{
-          const sel = document.querySelector('.tipoBtn.selected');
-          const modalidad = sel ? sel.dataset.modalidad : null;
+          // selección global: buscar fila seleccionada en toda la vista
+          const selectedRow = document.querySelector('.tableMini tbody tr.partSelected');
+          if(!selectedRow){ mostrarError('Seleccione un caballo antes de apostar'); return; }
+          const caballoSeleccionado = selectedRow.dataset.caballo;
+          const carreraSeleccionadaId = selectedRow.dataset.carreraId;
+          if(!caballoSeleccionado){ mostrarError('Error interno: caballo no identificado'); return; }
+          if(String(carreraSeleccionadaId) !== String(c.id)){
+            mostrarError('Seleccione una participación de esta misma carrera antes de apostar');
+            return;
+          }
+          const selModal = document.querySelector('.tipoBtn.selected');
+          const modalidad = selModal ? selModal.dataset.modalidad : null;
           if(!modalidad){ mostrarError('Seleccione una modalidad antes de apostar'); return; }
-          dispatcher.submit('/tableroJugador/apostar', { idCarrera: c.id, modalidad });
+          const payload = { idCarrera: c.id, nombreCaballo: caballoSeleccionado, modalidad };
+          dispatcher.submit('/tableroJugador/apostar', payload);
         });
         foot.appendChild(btn);
         card.appendChild(foot);

@@ -348,10 +348,10 @@ public class DatosPrueba {
                 carrera5.finalizar(carrera5.getParticipaciones().get(1));
 
                 // carrera4.setGanador(
-                //                 carrera4.getParticipaciones().get(0));
+                // carrera4.getParticipaciones().get(0));
 
                 // carrera5.setGanador(
-                //                 carrera5.getParticipaciones().get(1));
+                // carrera5.getParticipaciones().get(1));
 
                 // carrera4.finalizar();
                 // carrera5.finalizar();
@@ -403,47 +403,39 @@ public class DatosPrueba {
         // ------------------------------------------
         // APUESTAS RANDOM
         // ------------------------------------------
-
-        private static void generarApuestas(
-                        Carrera carrera) throws ApuestaNoValidaException, CarreraNoValidaException {
+        private static void generarApuestas(Carrera carrera)
+                        throws ApuestaNoValidaException, CarreraNoValidaException {
 
                 Random random = new Random();
 
                 Jugador[] jugadores = {
-                                jugador1,
-                                jugador2,
-                                jugador3,
-                                jugador4,
-                                jugador5,
-                                jugador6,
+                                jugador1, jugador2, jugador3,
+                                jugador4, jugador5, jugador6,
                                 jugador7
                 };
 
                 Modalidad[] modalidades = {
-                                simple,
-                                triple,
-                                superApuesta
+                                simple, triple, superApuesta
                 };
 
-                for (Participacion p : carrera.getParticipaciones()) {
+                for (Jugador jugador : jugadores) {
 
-                        int cantidad = random.nextInt(11) + 10;
+                        // Cada jugador realiza entre 1 y 3 apuestas
+                        int cantidadApuestas = random.nextInt(3) + 1;
 
-                        for (int i = 0; i < cantidad; i++) {
+                        for (int i = 0; i < cantidadApuestas; i++) {
 
-                                Jugador jugador = jugadores[random.nextInt(
-                                                jugadores.length)];
+                                Participacion participacion = carrera.getParticipaciones().get(
+                                                random.nextInt(carrera.getParticipaciones().size()));
 
-                                Modalidad modalidad = modalidades[random.nextInt(
-                                                modalidades.length)];
+                                Modalidad modalidad = modalidades[random.nextInt(modalidades.length)];
 
-                                double monto = (random.nextInt(20) + 1)
-                                                * 1000;
+                                double monto = (random.nextInt(20) + 1) * 1000;
 
                                 Apuesta apuesta = new Apuesta(
                                                 monto,
                                                 jugador,
-                                                p,
+                                                participacion,
                                                 modalidad);
 
                                 carrera.agregarApuesta(apuesta);
@@ -452,4 +444,52 @@ public class DatosPrueba {
 
                 carrera.recalcularDividendos();
         }
+        // private static void generarApuestas(
+        // Carrera carrera) throws ApuestaNoValidaException, CarreraNoValidaException {
+
+        // Random random = new Random();
+
+        // Jugador[] jugadores = {
+        // jugador1,
+        // jugador2,
+        // jugador3,
+        // jugador4,
+        // jugador5,
+        // jugador6,
+        // jugador7
+        // };
+
+        // Modalidad[] modalidades = {
+        // simple,
+        // triple,
+        // superApuesta
+        // };
+
+        // for (Participacion p : carrera.getParticipaciones()) {
+
+        // int cantidad = random.nextInt(11) + 10;
+
+        // for (int i = 0; i < cantidad; i++) {
+
+        // Jugador jugador = jugadores[random.nextInt(
+        // jugadores.length)];
+
+        // Modalidad modalidad = modalidades[random.nextInt(
+        // modalidades.length)];
+
+        // double monto = (random.nextInt(20) + 1)
+        // * 1000;
+
+        // Apuesta apuesta = new Apuesta(
+        // monto,
+        // jugador,
+        // p,
+        // modalidad);
+
+        // carrera.agregarApuesta(apuesta);
+        // }
+        // }
+
+        // carrera.recalcularDividendos();
+        // }
 }

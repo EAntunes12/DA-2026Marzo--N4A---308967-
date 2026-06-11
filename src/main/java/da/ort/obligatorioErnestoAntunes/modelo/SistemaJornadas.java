@@ -7,6 +7,7 @@ import java.util.List;
 import da.ort.obligatorioErnestoAntunes.dto.ApuestaDTO;
 import da.ort.obligatorioErnestoAntunes.dto.CarreraDTO;
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
+import da.ort.obligatorioErnestoAntunes.excepciones.CaballoNoValidoException;
 import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.JornadaNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
@@ -84,7 +85,6 @@ public class SistemaJornadas {
     public List<Apuesta> getApuestasPorJugador(String jugador){
         List<Apuesta> listaRet = new ArrayList<>();
         List<Apuesta> apuestas = getTodasLasApuestas();
-
         for (Apuesta a : apuestas) {
             if (a.getJugador().getNombre().equalsIgnoreCase(jugador)) {
                 listaRet.add(a);
@@ -210,5 +210,27 @@ public class SistemaJornadas {
                 total += j.getTotalGanadoPorJugador(nombreCompleto);
             }
         return total;
+    }
+
+    public Participacion buscarParticipacion(String nombreCaballo) throws ParticipacionNoValidaException{
+        for(Jornada j : this.jornadas){
+            Participacion p = j.buscarParticipacion(nombreCaballo);
+
+            if(p != null){
+                return p;
+            }
+        }
+        throw new ParticipacionNoValidaException("No existe un caballo con ese nombre");
+    }
+
+    public Apuesta buscarApuesta(int idApuesta) throws ApuestaNoValidaException{
+        for(Jornada j : this.jornadas){
+            Apuesta apuesta = j.buscarApuesta(idApuesta);
+
+            if(apuesta != null){
+                return apuesta;
+            }
+        }
+        throw new ApuestaNoValidaException("No existe la apuesta");
     }
 }

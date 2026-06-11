@@ -5,12 +5,18 @@ import java.time.LocalDate;
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
 
 public class Apuesta {
+    private static int ultimoId = 0; 
+    private int id;
+
     private double valor;
     private Jugador jugador;
     private Participacion participacion;
     private Modalidad modalidad;  
     private LocalDate fecha;  
 
+    public int getId() {
+        return id;
+    }
     public Jugador getJugador() {
         return jugador;
     }
@@ -37,6 +43,7 @@ public class Apuesta {
 
 
     public Apuesta(double valor, Jugador jugador, Participacion participacion, Modalidad modalidad) {
+        this.id = ++ultimoId;
         this.valor = valor;
         this.jugador = jugador;
         this.participacion = participacion;
@@ -85,5 +92,8 @@ public class Apuesta {
 
     public boolean esDeJugador(String nombreCompleto) {
         return this.jugador.getNombreCompleto().equals(nombreCompleto);
+    }
+    public double getPremioSiEsganadora(Carrera c) {
+        return calcularPremio(c.totalApostadoPorCaballo(participacion));
     }
 }

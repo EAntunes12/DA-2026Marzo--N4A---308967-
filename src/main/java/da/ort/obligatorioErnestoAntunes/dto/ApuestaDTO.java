@@ -5,17 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import da.ort.obligatorioErnestoAntunes.modelo.Apuesta;
+import da.ort.obligatorioErnestoAntunes.modelo.Caballo;
 import da.ort.obligatorioErnestoAntunes.modelo.Apuesta;
 import da.ort.obligatorioErnestoAntunes.modelo.Modalidad;
 import da.ort.obligatorioErnestoAntunes.modelo.Participacion;
 
 public class ApuestaDTO {
+    private int id;
     private double valor;
     private String jugador;
     private Participacion participacion;
     private Modalidad modalidad;
     private LocalDate fecha;
-
+    
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
     public LocalDate getFecha() {
         return fecha;
     }
@@ -50,6 +58,7 @@ public class ApuestaDTO {
     public ApuestaDTO(){}
 
     public ApuestaDTO(Apuesta a){
+        this.id = a.getId();
         this.valor = a.getValor();
         this.jugador = a.getJugador().getNombre();
         this.participacion = a.getParticipacion();
@@ -65,7 +74,9 @@ public class ApuestaDTO {
         return result;
     }
 
-
+    public static ApuestaDTO from(Apuesta apuesta) {
+        return new ApuestaDTO(apuesta);
+    }
 
 
 }

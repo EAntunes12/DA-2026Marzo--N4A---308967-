@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import da.ort.obligatorioErnestoAntunes.modelo.Administrador;
+import da.ort.obligatorioErnestoAntunes.modelo.Carrera;
 import da.ort.obligatorioErnestoAntunes.modelo.Jugador;
 
 public class JugadorDTO {
@@ -47,5 +48,9 @@ public class JugadorDTO {
             result.add(new JugadorDTO(jug));
         }
         return result;
+    }
+
+    public static JugadorDTO from(Jugador j) {
+        return new JugadorDTO(j);
     }
 }

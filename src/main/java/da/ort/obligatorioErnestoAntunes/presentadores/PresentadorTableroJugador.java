@@ -31,7 +31,7 @@ public class PresentadorTableroJugador {
     }
 
     @PostMapping("/vistaConectada")
-    public Commands vistaConectada(@SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO){
+    public Commands vistaConectada(@SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO) throws UsuarioInvalidoException{
         if(jugadorDTO != null){
             this.jugadorDTO = jugadorDTO;
             return Commands.create(saldoJugador(), datosJugador(), carrerasDisponibles(), tiposDeApuesta(), apuestasJugador(), totalApostado(), totalGanado());
@@ -40,12 +40,15 @@ public class PresentadorTableroJugador {
     }
 
     @PostMapping("/apostar")
-    public Commands apostar(@RequestParam int idCarrera, @RequestParam String modalidad, @SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO, HttpSession session) throws CarreraNoValidaException{
+    public Commands apostar(
+        @RequestParam int idCarrera, @RequestParam String modalidad, @RequestParam String nombreCaballo, 
+        @SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO, HttpSession session) throws CarreraNoValidaException{
         if(jugadorDTO != null){
             CarreraDTO carreraDTO = CarreraDTO.from(fachada.buscarCarrera(idCarrera));
 
             session.setAttribute("carreraApostar", carreraDTO);
             session.setAttribute("modalidadSeleccionada", modalidad);
+            session.setAttribute("nombreCaballo", nombreCaballo);
 
             return Commands.create(vistaApostar());
         }
@@ -54,16 +57,17 @@ public class PresentadorTableroJugador {
 
     @PostMapping("/logout")
     public Commands logout(HttpSession session) throws UsuarioInvalidoException{
-        fachada.logout(((JugadorDTO)session.getAttribute("jugador")).getNombre());
+        fachada.logout(((JugadorDTO)session.getAttribute("jugador")).getNombreCompleto());
         session.invalidate();
         return Commands.create(accesoNoPermitido());
     }
     
-    private Command saldoJugador(){
-        return new Command("Saldo", jugadorDTO.getSaldo());
+    private Command saldoJugador() throws UsuarioInvalidoException{
+        JugadorDTO dto = JugadorDTO.from(fachada.buscarJugador(jugadorDTO.getNombreCompleto()));
+        return new Command("Saldo", dto.getSaldo());
     }
 
-    private Command apuestasJugador(){
+    private Command apuestasJugador() {
         return new Command("Apuestas del jugador", ApuestaDTO.fromList(fachada.getApuestasPorJugador(jugadorDTO.getNombre())));
     }
 

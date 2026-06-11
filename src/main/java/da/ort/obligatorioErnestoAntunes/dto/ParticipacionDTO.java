@@ -55,4 +55,7 @@ public class ParticipacionDTO {
         return result;
     }
 
+    public static ParticipacionDTO from(Participacion p, Carrera c) {
+        return new ParticipacionDTO(p, c);
+    }
 }

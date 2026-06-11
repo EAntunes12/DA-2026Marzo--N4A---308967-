@@ -1,0 +1,20 @@
+.container{max-width:720px;margin:36px auto;padding:20px}
+.card{background:linear-gradient(180deg,#0f2438,#071826);border-radius:10px;padding:18px;color:#dfeff6;border:1px solid rgba(255,193,7,0.06)}
+.heading{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.heading h2{color:#FFD54A;margin:0}
+.section{background:linear-gradient(180deg,#081826,#07121a);padding:16px;border-radius:8px;margin-bottom:14px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.row .label{color:#9fb6c7}
+.row .value{font-weight:700}
+.badgeTipo{background:#f6c84b;color:#08171a;padding:6px 10px;border-radius:8px;font-weight:700}
+.resultBox{background:#083b24;padding:18px;border-radius:8px;color:#bff7c6;text-align:center;margin:10px 0}
+.inputInline{display:flex;gap:12px;align-items:center}
+.inputInline input[type=number],.inputInline input[type=password]{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#071826;color:#dfeff6}
+/* específico para el input de monto: color de fondo más oscuro */
+#montoInput{background:#04101a;border:1px solid rgba(255,255,255,0.02);color:#eaf6f2}
+#montoInput:focus{outline:none;box-shadow:0 0 8px rgba(255,193,7,0.08);border-color:rgba(255,193,7,0.12)}
+.btnConfirm{background:linear-gradient(135deg,#FFC107 0%, #FFB300 100%);border:none;padding:12px;border-radius:8px;font-weight:800;color:#07171a;cursor:pointer}
+.btnSecondary{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;color:#dfeff6;cursor:pointer}
+.error{background:rgba(231,76,60,0.12);color:#ffd2d2;padding:10px;border-radius:6px;margin-bottom:10px}
+.muted{color:#9fb6c7}
+.center{display:flex;justify-content:center}
