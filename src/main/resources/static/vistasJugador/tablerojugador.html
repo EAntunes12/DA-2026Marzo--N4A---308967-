@@ -215,7 +215,60 @@
     // logout
     document.getElementById('btnLogout').addEventListener('click', ()=> dispatcher.submit('/tableroJugador/logout'));
 
+    // Start view immediately, then open SSE in background to receive presenter's actualizar() notifications
     dispatcher.startView(view);
+
+    const SSE_URL = '/tableroJugador/registrarSSE';
+    let eventSource = null;
+    let reconnectAttempts = 0;
+
+    function setupSSE() {
+      return new Promise((resolve) => {
+        try {
+          eventSource = new EventSource(SSE_URL, { withCredentials: true });
+
+          eventSource.onopen = () => {
+            console.debug('SSE connected to', SSE_URL);
+            reconnectAttempts = 0;
+            resolve();
+          };
+
+          eventSource.onmessage = (ev) => {
+            try {
+              if (!ev.data) return;
+              const json = JSON.parse(ev.data);
+              if (json && (json.commands || Array.isArray(json))) {
+                if (json.commands) dispatcher.processCommands(json);
+                else dispatcher.processCommands({ commands: json });
+              } else {
+                console.warn('SSE message ignored, unexpected payload', json);
+              }
+            } catch (e) {
+              console.error('Error parsing SSE message', e, ev.data);
+            }
+          };
+
+          eventSource.onerror = (err) => {
+            console.warn('SSE error, attempting reconnect', err);
+            try { eventSource.close(); } catch(e){}
+            eventSource = null;
+            reconnectAttempts++;
+            const timeout = Math.min(30000, 1000 * Math.pow(2, Math.min(reconnectAttempts, 6)));
+            setTimeout(() => setupSSE(), timeout);
+          };
+        } catch (e) {
+          console.error('SSE setup failed', e);
+          resolve();
+        }
+      });
+    }
+
+    window.addEventListener('beforeunload', () => {
+      try { if (eventSource) eventSource.close(); } catch(e){}
+    });
+
+    // open SSE in background (do not block startView)
+    setupSSE().catch(() => {});
   </script>
 </body>
 </html>

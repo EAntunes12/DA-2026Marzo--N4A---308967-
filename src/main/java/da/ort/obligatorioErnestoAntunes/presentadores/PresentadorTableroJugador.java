@@ -2,11 +2,13 @@ package da.ort.obligatorioErnestoAntunes.presentadores;
 
 import da.ort.obligatorioErnestoAntunes.conf.ConfiguracionAppObligatorio;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import da.ort.obligatorioErnestoAntunes.dto.AdminDTO;
 import da.ort.obligatorioErnestoAntunes.dto.ApuestaDTO;
@@ -20,6 +22,7 @@ import da.ort.obligatorioErnestoAntunes.modelo.Jugador;
 import da.ort.obligatorioErnestoAntunes.observer.Observable;
 import da.ort.obligatorioErnestoAntunes.observer.Observador;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/tableroJugador")
@@ -32,6 +35,13 @@ public class PresentadorTableroJugador implements Observador{
     public PresentadorTableroJugador(Fachada fachada, ConexionNavegador c){
         this.fachada = fachada;
         this.conexion = c;
+    }
+
+    @GetMapping(value = "/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter registrarSSE(@SessionAttribute(name="jugador", required=false) JugadorDTO jug) {
+        if (jug == null) return null; 
+        conexion.conectarSSE();
+        return conexion.getConexionSSE();
     }
 
     @PostMapping("/vistaConectada")
@@ -107,7 +117,18 @@ public class PresentadorTableroJugador implements Observador{
 
     @Override
     public void actualizar(Object evento, Observable origen) {
-        System.out.println("Evento: " + evento);
+        try{
+            if(evento == Fachada.Eventos.CAMBIO_ESTADO_CARRERA){
+                Commands cmds = Commands.create(
+                    saldoJugador(), apuestasJugador(), tiposDeApuesta(), carrerasDisponibles(),
+                    datosJugador(), totalApostado(), totalGanado()
+                );
+                conexion.enviarJSON(cmds);
+            }
+        }
+        catch(UsuarioInvalidoException ex){
+            ex.printStackTrace();
+        }
     }
     
 }

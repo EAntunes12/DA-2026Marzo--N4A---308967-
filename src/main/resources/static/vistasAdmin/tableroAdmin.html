@@ -283,8 +283,61 @@
     document.getElementById('prevJornada').addEventListener('click', () => dispatcher.submit('/tableroAdmin/anteriorJornada'));
     document.getElementById('logoutBtn').addEventListener('click', () => dispatcher.submit('/tableroAdmin/logout'));
 
-    // Start
+    // Start: open SSE first so the server can register this connection for pushes
+    const SSE_URL = '/tableroAdmin/registrarSSE';
+    let eventSource = null;
+    let reconnectAttempts = 0;
+
+    function setupSSE() {
+      return new Promise((resolve) => {
+        try {
+          eventSource = new EventSource(SSE_URL, { withCredentials: true });
+
+          eventSource.onopen = () => {
+            console.debug('SSE connected to', SSE_URL);
+            reconnectAttempts = 0;
+            resolve();
+          };
+
+          eventSource.onmessage = (ev) => {
+            try {
+              if (!ev.data) return;
+              const json = JSON.parse(ev.data);
+              // Expecting { commands: [...] } contract
+              if (json && (json.commands || Array.isArray(json))) {
+                if (json.commands) dispatcher.processCommands(json);
+                else dispatcher.processCommands({ commands: json });
+              } else {
+                console.warn('SSE message ignored, unexpected payload', json);
+              }
+            } catch (e) {
+              console.error('Error parsing SSE message', e, ev.data);
+            }
+          };
+
+          eventSource.onerror = (err) => {
+            console.warn('SSE error, will attempt reconnect', err);
+            try { eventSource.close(); } catch(e){}
+            eventSource = null;
+            reconnectAttempts++;
+            const timeout = Math.min(30000, 1000 * Math.pow(2, Math.min(reconnectAttempts, 6)));
+            setTimeout(() => setupSSE(), timeout);
+          };
+        } catch (e) {
+          console.error('SSE setup failed', e);
+          resolve(); // proceed anyway
+        }
+      });
+    }
+
+    // Ensure SSE is closed when leaving
+    window.addEventListener('beforeunload', () => {
+      try { if (eventSource) eventSource.close(); } catch(e){}
+    });
+
+    // Start the view immediately; open SSE in background so failures don't block initial POST
     dispatcher.startView(view);
+    setupSSE().catch(() => {});
   </script>
 </body>
 </html>
