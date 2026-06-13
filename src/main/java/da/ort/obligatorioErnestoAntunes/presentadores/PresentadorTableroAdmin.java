@@ -3,6 +3,8 @@ package da.ort.obligatorioErnestoAntunes.presentadores;
 import da.ort.obligatorioErnestoAntunes.modelo.Carrera;
 import da.ort.obligatorioErnestoAntunes.modelo.Fachada;
 import da.ort.obligatorioErnestoAntunes.modelo.Jornada;
+import da.ort.obligatorioErnestoAntunes.observer.Observable;
+import da.ort.obligatorioErnestoAntunes.observer.Observador;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +26,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/tableroAdmin")
 @Scope("session")
-public class PresentadorTableroAdmin {
+public class PresentadorTableroAdmin implements Observador{
     private Fachada fachada;
     private Jornada jornadaActual;
+    private final ConexionNavegador conexion;
 
-    public PresentadorTableroAdmin(Fachada fachada){
+    public PresentadorTableroAdmin(Fachada fachada, ConexionNavegador c){
         this.fachada = fachada;
+        this.conexion = c;
     }
 
 
@@ -39,6 +43,7 @@ public class PresentadorTableroAdmin {
             if(jornadaActual == null){
                 jornadaActual = fachada.obtenerJornadaActual();
             } 
+            fachada.agregarObservador(this);
             return Commands.create(
                 totalApostado(), totalPagado(), comisiones(), balanceJornada(),
                 cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
@@ -89,6 +94,7 @@ public class PresentadorTableroAdmin {
     public Commands logout(HttpSession session) throws UsuarioInvalidoException{
         fachada.logout(((AdminDTO)session.getAttribute("administrador")).getNombreCompleto());
         session.invalidate();
+        fachada.quitarObservador(this);
         return Commands.create(accesoNoPermitido());
     }
     
@@ -139,5 +145,11 @@ public class PresentadorTableroAdmin {
 
     private Command mostrarJornada(){
         return new Command("mostrarJornada", new JornadaDTO(jornadaActual));
+    }
+
+
+    @Override
+    public void actualizar(Object evento, Observable origen) {
+        System.out.println("evento: "+ evento);
     }
 }

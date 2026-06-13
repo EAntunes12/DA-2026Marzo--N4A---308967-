@@ -43,8 +43,6 @@ public class SistemaUsuarios {
         return (Administrador) u;
     }
 
-    public void cerrarSesion() {
-    }
 
     private void existeUsuario(Usuario u) throws UsuarioExistenteException{
         for(Usuario user : usuarios){

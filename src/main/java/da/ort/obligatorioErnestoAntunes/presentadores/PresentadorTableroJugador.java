@@ -17,23 +17,28 @@ import da.ort.obligatorioErnestoAntunes.excepciones.CarreraNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioInvalidoException;
 import da.ort.obligatorioErnestoAntunes.modelo.Fachada;
 import da.ort.obligatorioErnestoAntunes.modelo.Jugador;
+import da.ort.obligatorioErnestoAntunes.observer.Observable;
+import da.ort.obligatorioErnestoAntunes.observer.Observador;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/tableroJugador")
 @Scope("session")
-public class PresentadorTableroJugador {
+public class PresentadorTableroJugador implements Observador{
     private JugadorDTO jugadorDTO;
     private Fachada fachada;
+    private final ConexionNavegador conexion;
 
-    public PresentadorTableroJugador(Fachada fachada){
+    public PresentadorTableroJugador(Fachada fachada, ConexionNavegador c){
         this.fachada = fachada;
+        this.conexion = c;
     }
 
     @PostMapping("/vistaConectada")
     public Commands vistaConectada(@SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO) throws UsuarioInvalidoException{
         if(jugadorDTO != null){
             this.jugadorDTO = jugadorDTO;
+            fachada.agregarObservador(this);
             return Commands.create(saldoJugador(), datosJugador(), carrerasDisponibles(), tiposDeApuesta(), apuestasJugador(), totalApostado(), totalGanado());
         }
         return Commands.create(accesoNoPermitido());
@@ -45,10 +50,7 @@ public class PresentadorTableroJugador {
         @SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO, HttpSession session) throws CarreraNoValidaException{
         if(jugadorDTO != null){
             CarreraDTO carreraDTO = CarreraDTO.from(fachada.buscarCarrera(idCarrera));
-
-            System.out.println("ID carrera: " + carreraDTO.getId());
-            System.out.println("Numero carrera: " + carreraDTO.getNumero());
-
+            
             session.setAttribute("carreraApostar", carreraDTO);
             session.setAttribute("modalidadSeleccionada", modalidad);
             session.setAttribute("nroRegistro", nroRegistro);
@@ -62,6 +64,7 @@ public class PresentadorTableroJugador {
     public Commands logout(HttpSession session) throws UsuarioInvalidoException{
         fachada.logout(((JugadorDTO)session.getAttribute("jugador")).getNombreCompleto());
         session.invalidate();
+        fachada.quitarObservador(this);
         return Commands.create(accesoNoPermitido());
     }
     
@@ -100,6 +103,11 @@ public class PresentadorTableroJugador {
 
     private Command vistaApostar(){
         return new Command("Vista apostar", "apostar.html");
+    }
+
+    @Override
+    public void actualizar(Object evento, Observable origen) {
+        System.out.println("Evento: " + evento);
     }
     
 }

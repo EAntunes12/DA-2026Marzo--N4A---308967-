@@ -12,13 +12,23 @@ import da.ort.obligatorioErnestoAntunes.excepciones.ModalidadNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.ParticipacionNoValidaException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioExistenteException;
 import da.ort.obligatorioErnestoAntunes.excepciones.UsuarioInvalidoException;
+import da.ort.obligatorioErnestoAntunes.observer.Observable;
 
-public class Fachada {
+public class Fachada extends Observable{
     private static Fachada instancia;
 
         private SistemaApuestas sistemaApuestas;
         private SistemaJornadas sistemaJornadas;
         private SistemaUsuarios sistemaUsuarios;
+
+        public enum Eventos{
+            APUESTA_REALIZADA,
+            JORNADA_CAMBIADA,
+            USUARIO_DESCONECTADO,
+            CARRERA_ABIERTA,
+            CARRERA_CERRADA,
+            CARRERA_FINALIZADA
+        }
 
         private Fachada() {
             this.sistemaApuestas = new SistemaApuestas(0.10); //comision del hipodromo 10%
@@ -45,10 +55,6 @@ public class Fachada {
             return sistemaUsuarios.loginAdmin(nombre, pass);
         }
 
-        public void cerrarSesion() {
-            sistemaUsuarios.cerrarSesion();
-        }
-
         public void agregarUsuario(Usuario u) throws UsuarioInvalidoException, UsuarioExistenteException {
             sistemaUsuarios.agregarUsuario(u);
         }
@@ -67,6 +73,7 @@ public class Fachada {
         
         public void logout(String nombreCompleto) throws UsuarioInvalidoException{
             sistemaUsuarios.logout(nombreCompleto);
+            avisar(Eventos.USUARIO_DESCONECTADO);
         }
 
         public Jornada obtenerJornadaActual() {
@@ -74,11 +81,15 @@ public class Fachada {
         }
 
         public Jornada siguienteJornada(Jornada actual) {
-            return sistemaJornadas.siguienteJornada(actual);
+            Jornada j = sistemaJornadas.siguienteJornada(actual);
+            avisar(Eventos.JORNADA_CAMBIADA); 
+            return j;
         }
 
         public Jornada anteriorJornada(Jornada actual) {
-            return sistemaJornadas.anteriorJornada(actual);
+            Jornada j =sistemaJornadas.anteriorJornada(actual);
+            avisar(Eventos.JORNADA_CAMBIADA); 
+            return j;
         }
 
         public List<Carrera> getCarrerasDisponibles(){
@@ -111,6 +122,7 @@ public class Fachada {
 
         public void abrirCarrera(int id) throws CarreraNoValidaException{
             sistemaJornadas.abrirCarrera(id);
+            avisar(Eventos.CARRERA_ABIERTA);
         }
 
         public Carrera buscarCarrera(int id) throws CarreraNoValidaException{
@@ -119,10 +131,12 @@ public class Fachada {
 
         public void cerrarCarrera(int id) throws CarreraNoValidaException{
             sistemaJornadas.cerrarCarrera(id);
+            avisar(Eventos.CARRERA_CERRADA);
         }
 
         public void finalizarCarrera(int id, int nroRegistroPart) throws ParticipacionNoValidaException, CarreraNoValidaException {
             sistemaJornadas.finalizarCarrera(id, nroRegistroPart); 
+            avisar(Eventos.CARRERA_FINALIZADA);
         }
 
         public double getTotalApostadoPorJornada(LocalDate fechaJornada) throws JornadaNoValidaException {
@@ -153,7 +167,9 @@ public class Fachada {
             Jugador jugador = (Jugador)buscarUsuario(nombreCompleto);
             Participacion part = buscarParticipacion(nroRegistro, idCarrera);
             Carrera carrera = buscarCarrera(idCarrera);
-            return sistemaApuestas.crearApuesta(valorApuesta, jugador, part, modalidad, carrera);
+            Apuesta a = sistemaApuestas.crearApuesta(valorApuesta, jugador, part, modalidad, carrera);
+            avisar(Eventos.APUESTA_REALIZADA);
+            return a;
         }
 
         public Usuario buscarUsuario(String nombre) throws UsuarioInvalidoException {
