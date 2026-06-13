@@ -165,18 +165,6 @@ public class Jornada {
         return total;
     }
 
-    public Participacion buscarParticipacion(String nombreCaballo) {
-        for (Carrera c : carreras) {
-            Participacion p = c.buscarParticipacion(nombreCaballo);
-
-            if (p != null) {
-                return p;
-            }
-        }
-
-        return null;
-    }
-
     public Apuesta buscarApuesta(int idApuesta) {
         for(Carrera c : this.carreras){
             Apuesta apuesta = c.buscarApuesta(idApuesta);

@@ -41,14 +41,17 @@ public class PresentadorTableroJugador {
 
     @PostMapping("/apostar")
     public Commands apostar(
-        @RequestParam int idCarrera, @RequestParam String modalidad, @RequestParam String nombreCaballo, 
+        @RequestParam int idCarrera, @RequestParam String modalidad, @RequestParam int nroRegistro, 
         @SessionAttribute(name="jugador",required=false) JugadorDTO jugadorDTO, HttpSession session) throws CarreraNoValidaException{
         if(jugadorDTO != null){
             CarreraDTO carreraDTO = CarreraDTO.from(fachada.buscarCarrera(idCarrera));
 
+            System.out.println("ID carrera: " + carreraDTO.getId());
+            System.out.println("Numero carrera: " + carreraDTO.getNumero());
+
             session.setAttribute("carreraApostar", carreraDTO);
             session.setAttribute("modalidadSeleccionada", modalidad);
-            session.setAttribute("nombreCaballo", nombreCaballo);
+            session.setAttribute("nroRegistro", nroRegistro);
 
             return Commands.create(vistaApostar());
         }

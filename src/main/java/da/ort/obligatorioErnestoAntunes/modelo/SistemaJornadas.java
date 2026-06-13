@@ -125,15 +125,11 @@ public class SistemaJornadas {
         throw new CarreraNoValidaException("No existe una carrera con ese ID");
     }
 
-    public Participacion buscarParticipacion(int nro) throws ParticipacionNoValidaException {
-        for (Jornada j : this.jornadas) {
-            Participacion p = j.buscarParticipacion(nro);
+    public Participacion buscarParticipacion(int nro, Carrera c) throws ParticipacionNoValidaException {
+        Participacion p = c.buscarParticipacion(nro);
+        if(p == null) throw new ParticipacionNoValidaException("No existe una participoacion con ese nro");
 
-            if (p != null) {
-                return p;
-            }
-        }
-        throw new ParticipacionNoValidaException("No existe una participoacion con ese nro");
+        return p;
     }
 
     public void abrirCarrera(int id) throws CarreraNoValidaException {
@@ -149,7 +145,7 @@ public class SistemaJornadas {
     public void finalizarCarrera(int id, int nroRegistroPart)
             throws ParticipacionNoValidaException, CarreraNoValidaException {
         Carrera carrera = buscarCarrera(id);
-        Participacion ganador = buscarParticipacion(nroRegistroPart);
+        Participacion ganador = buscarParticipacion(nroRegistroPart, carrera);
         carrera.finalizar(ganador);
 
         // Le paga a los jugadores que apostaron al ganador de la carrera, pero no estoy
@@ -210,17 +206,6 @@ public class SistemaJornadas {
                 total += j.getTotalGanadoPorJugador(nombreCompleto);
             }
         return total;
-    }
-
-    public Participacion buscarParticipacion(String nombreCaballo) throws ParticipacionNoValidaException{
-        for(Jornada j : this.jornadas){
-            Participacion p = j.buscarParticipacion(nombreCaballo);
-
-            if(p != null){
-                return p;
-            }
-        }
-        throw new ParticipacionNoValidaException("No existe un caballo con ese nombre");
     }
 
     public Apuesta buscarApuesta(int idApuesta) throws ApuestaNoValidaException{

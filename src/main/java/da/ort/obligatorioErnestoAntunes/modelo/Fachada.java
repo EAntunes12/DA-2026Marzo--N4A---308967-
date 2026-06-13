@@ -149,13 +149,9 @@ public class Fachada {
             return sistemaJornadas.getTotalGanadoPorJugador(nombreCompleto);
         }
 
-        public Participacion buscarParticipacion(String nombreCaballo) throws ParticipacionNoValidaException{
-            return sistemaJornadas.buscarParticipacion(nombreCaballo);
-        }
-
-        public Apuesta crearApuesta(double valorApuesta, String nombreCompleto, String nombreCaballo, String modalidad, int idCarrera) throws UsuarioInvalidoException, ParticipacionNoValidaException, ModalidadNoValidaException, ApuestaNoValidaException, CarreraNoValidaException {
+        public Apuesta crearApuesta(double valorApuesta, String nombreCompleto, int nroRegistro, String modalidad, int idCarrera) throws UsuarioInvalidoException, ParticipacionNoValidaException, ModalidadNoValidaException, ApuestaNoValidaException, CarreraNoValidaException {
             Jugador jugador = (Jugador)buscarUsuario(nombreCompleto);
-            Participacion part = buscarParticipacion(nombreCaballo);
+            Participacion part = buscarParticipacion(nroRegistro, idCarrera);
             Carrera carrera = buscarCarrera(idCarrera);
             return sistemaApuestas.crearApuesta(valorApuesta, jugador, part, modalidad, carrera);
         }
@@ -185,8 +181,13 @@ public class Fachada {
         public Jugador buscarJugador(String nombreCompleto) throws UsuarioInvalidoException {
             return sistemaUsuarios.buscarJugador(nombreCompleto);
         }
-        
 
+        public Participacion buscarParticipacion(int nro, int idCarrera) throws ParticipacionNoValidaException, CarreraNoValidaException {
+            Carrera c = buscarCarrera(idCarrera);
+            return sistemaJornadas.buscarParticipacion(nro, c);
+        }
+        
+        
         
 
         

@@ -11,9 +11,16 @@ public class ParticipacionDTO {
     private int nroRegistro;
     private double dividendo;
     private Caballo caballo;
-    public double totalApostado;
-    public int cantApuestas;
+    private double totalApostado;
+    private int cantApuestas;
+    private int numeroCarrera;
 
+    public int getNumeroCarrera() {
+        return numeroCarrera;
+    }
+    public void setNumeroCarrera(int nroCarrera) {
+        this.numeroCarrera = nroCarrera;
+    }
     public double getTotalApostado() {
         return totalApostado;
     }
@@ -45,6 +52,7 @@ public class ParticipacionDTO {
         this.caballo = p.getCaballo();
         this.totalApostado = c.totalApostadoPorCaballo(p);
         this.cantApuestas = c.cantApuestasPorParticipacion(p);
+        this.numeroCarrera = c.getNumero();
     }
 
     public static List<ParticipacionDTO> fromList(List<Participacion> participaciones,Carrera carrera) {

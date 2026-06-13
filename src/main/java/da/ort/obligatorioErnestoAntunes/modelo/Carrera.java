@@ -103,6 +103,7 @@ public class Carrera {
         p.validar();
         existeParticipacion(p);
 
+        p.setCarrera(this);
         participaciones.add(p);
     }
 
@@ -280,16 +281,6 @@ public class Carrera {
             }
         }
         return total;
-    }
-
-    public Participacion buscarParticipacion(String nombreCaballo) {
-        for (Participacion p : participaciones) {
-            if (p.getCaballo().getNombre().equals(nombreCaballo)) {
-                return p;
-            }
-        }
-
-        return null;
     }
 
     public Apuesta buscarApuesta(int idApuesta) {

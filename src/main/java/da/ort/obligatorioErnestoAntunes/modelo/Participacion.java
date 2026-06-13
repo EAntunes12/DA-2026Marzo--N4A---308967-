@@ -6,7 +6,15 @@ public class Participacion {
     private int numeroRegistro;
     private double dividendo;
     private Caballo caballo;
+    private Carrera carrera;
 
+    public Carrera getCarrera() {
+        return carrera;
+    }
+
+    public void setCarrera(Carrera carrera) {
+        this.carrera = carrera;
+    }
     public Caballo getCaballo() {
         return caballo;
     }

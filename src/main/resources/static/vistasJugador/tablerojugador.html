@@ -142,8 +142,9 @@
           } else {
             divi.textContent = formatMoney(rawDiv);
           }
-          // make row selectable and store caballo name and carrera id
+          // make row selectable and store caballo name, nroRegistro and carrera id
           tr.dataset.caballo = caballoNombre;
+          tr.dataset.nroRegistro = p.nroRegistro || p.numeroRegistro || p.nro || '';
           tr.dataset.carreraId = c.id;
           tr.addEventListener('click', () => {
             // deselect todas las filas en la vista (selección global)
@@ -162,9 +163,9 @@
           // selección global: buscar fila seleccionada en toda la vista
           const selectedRow = document.querySelector('.tableMini tbody tr.partSelected');
           if(!selectedRow){ mostrarError('Seleccione un caballo antes de apostar'); return; }
-          const caballoSeleccionado = selectedRow.dataset.caballo;
+          const nroSeleccionado = selectedRow.dataset.nroRegistro;
           const carreraSeleccionadaId = selectedRow.dataset.carreraId;
-          if(!caballoSeleccionado){ mostrarError('Error interno: caballo no identificado'); return; }
+          if(!nroSeleccionado){ mostrarError('Error interno: participación no identificada'); return; }
           if(String(carreraSeleccionadaId) !== String(c.id)){
             mostrarError('Seleccione una participación de esta misma carrera antes de apostar');
             return;
@@ -172,7 +173,7 @@
           const selModal = document.querySelector('.tipoBtn.selected');
           const modalidad = selModal ? selModal.dataset.modalidad : null;
           if(!modalidad){ mostrarError('Seleccione una modalidad antes de apostar'); return; }
-          const payload = { idCarrera: c.id, nombreCaballo: caballoSeleccionado, modalidad };
+          const payload = { idCarrera: c.id, modalidad, nroRegistro: Number(nroSeleccionado) };
           dispatcher.submit('/tableroJugador/apostar', payload);
         });
         foot.appendChild(btn);
@@ -187,10 +188,11 @@
       tbody.innerHTML='';
       if(!Array.isArray(apuestas)) apuestas = apuestas ? [apuestas] : [];
       if(apuestas.length===0){ tbody.innerHTML='<tr><td colspan="6" class="small">No hay apuestas</td></tr>'; return; }
+      console.log(apuestas);
       apuestas.forEach(a => {
         const tr = document.createElement('tr');
         const fecha = document.createElement('td'); fecha.textContent = a.fecha || a.fechaOperacion || '-';
-        const nro = document.createElement('td'); try{ nro.textContent = a.participacion?.carrera?.numero || a.participacion?.getCarrera?.numero || a.participacion?.getCarrera?.numero || a.participacion?.numeroRegistro || a.participacion?.nroRegistro || ''; }catch(e){ nro.textContent=''; }
+        const nro = document.createElement('td'); nro.textContent = a.participacion?.numeroCarrera ?? '';
         const caballo = document.createElement('td'); caballo.textContent = a.participacion?.caballo?.nombre || a.participacion?.caballo || '';
         const monto = document.createElement('td'); monto.textContent = formatMoney(a.valor);
         const tipo = document.createElement('td'); tipo.textContent = a.modalidad?.nombre || (a.modalidad?String(a.modalidad):'');

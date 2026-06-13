@@ -40,7 +40,7 @@ public class PresentadorApuestaJugador {
             @SessionAttribute(name = "jugador", required = false) JugadorDTO jugadorDTO,
             @SessionAttribute(name = "carreraApostar", required = false) CarreraDTO carreraDTO,
             @SessionAttribute(name = "modalidadSeleccionada", required = false) String modalidad,
-            @SessionAttribute(name = "nombreCaballo", required = false) String nombreCaballo)
+            @SessionAttribute(name = "nroRegistro", required = false) int nroRegistro)
             throws ParticipacionNoValidaException, CarreraNoValidaException {
         if (jugadorDTO == null) {
             return Commands.create(accesoNoPermitido());
@@ -49,7 +49,7 @@ public class PresentadorApuestaJugador {
         if (carreraDTO != null && modalidad != null) {
             this.modalidad = modalidad;
             this.carreraDTO = carreraDTO;
-            this.partDTO = ParticipacionDTO.from(fachada.buscarParticipacion(nombreCaballo),
+            this.partDTO = ParticipacionDTO.from(fachada.buscarParticipacion(nroRegistro, carreraDTO.getId()),
                     fachada.buscarCarrera(carreraDTO.getId()));
 
             return Commands.create(numCarrera(), nombreCarrera(), nombreCaballo(), dividendoActual(), tipoApuesta(),
@@ -67,7 +67,7 @@ public class PresentadorApuestaJugador {
             boolean passCorrecta = fachada.buscarPassword(pass, jugadorDTO.getNombreCompleto());
             boolean montoValido = fachada.montoValido(valorApuesta, jugadorDTO.getNombreCompleto());
             if(passCorrecta && montoValido){
-                ApuestaDTO apuestaDTO = ApuestaDTO.from(fachada.crearApuesta(valorApuesta, jugadorDTO.getNombreCompleto(), partDTO.getCaballo().getNombre(),
+                ApuestaDTO apuestaDTO = ApuestaDTO.from(fachada.crearApuesta(valorApuesta, jugadorDTO.getNombreCompleto(), partDTO.getNroRegistro(),
                         modalidad, carreraDTO.getId()));
                 this.apuestaDTO = apuestaDTO;
                 return Commands.create(volverAlTablero());

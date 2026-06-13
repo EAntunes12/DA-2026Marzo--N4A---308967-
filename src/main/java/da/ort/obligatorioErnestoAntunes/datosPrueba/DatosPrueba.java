@@ -409,37 +409,48 @@ public class DatosPrueba {
                 Random random = new Random();
 
                 Jugador[] jugadores = {
-                                jugador1, jugador2, jugador3,
-                                jugador4, jugador5, jugador6,
+                                jugador1,
+                                jugador2,
+                                jugador3,
+                                jugador4,
+                                jugador5,
+                                jugador6,
                                 jugador7
                 };
 
                 Modalidad[] modalidades = {
-                                simple, triple, superApuesta
+                                simple,
+                                triple,
+                                superApuesta
                 };
 
-                for (Jugador jugador : jugadores) {
+                // Garantizar al menos una apuesta por caballo
+                for (Participacion p : carrera.getParticipaciones()) {
 
-                        // Cada jugador realiza entre 1 y 3 apuestas
-                        int cantidadApuestas = random.nextInt(3) + 1;
+                        Jugador jugador = jugadores[random.nextInt(jugadores.length)];
 
-                        for (int i = 0; i < cantidadApuestas; i++) {
+                        Modalidad modalidad = modalidades[random.nextInt(modalidades.length)];
 
-                                Participacion participacion = carrera.getParticipaciones().get(
-                                                random.nextInt(carrera.getParticipaciones().size()));
+                        double monto = (random.nextInt(20) + 1) * 1000;
 
-                                Modalidad modalidad = modalidades[random.nextInt(modalidades.length)];
+                        carrera.agregarApuesta(
+                                        new Apuesta(monto, jugador, p, modalidad));
+                }
 
-                                double monto = (random.nextInt(20) + 1) * 1000;
+                // Algunas apuestas extra para darle variedad
+                for (int i = 0; i < 10; i++) {
 
-                                Apuesta apuesta = new Apuesta(
-                                                monto,
-                                                jugador,
-                                                participacion,
-                                                modalidad);
+                        Participacion p = carrera.getParticipaciones()
+                                        .get(random.nextInt(carrera.getParticipaciones().size()));
 
-                                carrera.agregarApuesta(apuesta);
-                        }
+                        Jugador jugador = jugadores[random.nextInt(jugadores.length)];
+
+                        Modalidad modalidad = modalidades[random.nextInt(modalidades.length)];
+
+                        double monto = (random.nextInt(20) + 1) * 1000;
+
+                        carrera.agregarApuesta(
+                                        new Apuesta(monto, jugador, p, modalidad));
                 }
 
                 carrera.recalcularDividendos();
