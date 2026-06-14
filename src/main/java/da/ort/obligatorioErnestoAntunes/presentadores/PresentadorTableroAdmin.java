@@ -94,6 +94,7 @@ public class PresentadorTableroAdmin implements Observador{
         if(adminDTO != null){
             CarreraDTO carreraDTO = CarreraDTO.from(fachada.buscarCarrera(carrera));
             session.setAttribute("carreraSeleccionada", carreraDTO);
+            fachada.quitarObservador(this);
             return Commands.create(vistaGestionarCarrera());
         }
         return Commands.create(accesoNoPermitido());

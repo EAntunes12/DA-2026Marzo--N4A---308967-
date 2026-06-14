@@ -137,6 +137,18 @@
       return String(v);
     }
 
+    function formatDouble(v){
+      if(v===null||v===undefined) return '-';
+      if(v === 'N/A') return 'N/A';
+      const cleaned = String(v).replace(/,/g,'.');
+      const num = parseFloat(cleaned);
+      if(isNaN(num)) return String(v);
+      let s = num.toFixed(2);
+      s = s.replace(/\.00$/,'');
+      s = s.replace(/(\.\d)0$/,'$1');
+      return s;
+    }
+
     function parseISODateToUTC(iso){
       if(!iso) return null;
       const s = String(iso).split('T')[0];
@@ -219,7 +231,7 @@
           <td style="color:var(--accent);">${formatMoney(totalApostado)}</td>
           <td style="color:var(--success);">${formatMoney(totalPagado)}</td>
           <td><div class="horse-name" title="${ganadorNombre}">${ganadorNombre}${dividendo !== '-' ? '<span class="winner-flag">🏆</span>' : ''}</div></td>
-          <td>${dividendo !== '-' ? formatMoney(dividendo) : '-'}</td>
+          <td>${dividendo !== '-' ? formatDouble(dividendo) : '-'}</td>
         `;
         tbody.appendChild(tr);
       });

@@ -140,7 +140,7 @@
           if(rawDiv === -1 || rawDiv === '-1'){
             divi.textContent = 'N/A';
           } else {
-            divi.textContent = formatMoney(rawDiv);
+            divi.textContent = formatDouble(rawDiv);
           }
           // make row selectable and store caballo name, nroRegistro and carrera id
           tr.dataset.caballo = caballoNombre;
@@ -188,7 +188,6 @@
       tbody.innerHTML='';
       if(!Array.isArray(apuestas)) apuestas = apuestas ? [apuestas] : [];
       if(apuestas.length===0){ tbody.innerHTML='<tr><td colspan="6" class="small">No hay apuestas</td></tr>'; return; }
-      console.log(apuestas);
       apuestas.forEach(a => {
         const tr = document.createElement('tr');
         const fecha = document.createElement('td'); fecha.textContent = a.fecha || a.fechaOperacion || '-';
@@ -210,6 +209,18 @@
       const num = parseFloat(cleaned);
       if(!isNaN(num)) return '$'+new Intl.NumberFormat('es-UY',{maximumFractionDigits:0}).format(Math.round(num));
       return String(v);
+    }
+
+    function formatDouble(v){
+      if(v===null||v===undefined) return '-';
+      if(v === 'N/A') return 'N/A';
+      const cleaned = String(v).replace(/,/g,'.');
+      const num = parseFloat(cleaned);
+      if(isNaN(num)) return String(v);
+      let s = num.toFixed(2);
+      s = s.replace(/\.00$/,'');
+      s = s.replace(/(\.\d)0$/,'$1');
+      return s;
     }
 
     // logout
@@ -234,6 +245,7 @@
           };
 
           eventSource.onmessage = (ev) => {
+            console.log("SSE recibido:", ev.data);
             try {
               if (!ev.data) return;
               const json = JSON.parse(ev.data);

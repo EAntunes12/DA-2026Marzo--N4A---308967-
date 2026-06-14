@@ -25,7 +25,9 @@ public class Fachada extends Observable{
             APUESTA_REALIZADA,
             JORNADA_CAMBIADA,
             USUARIO_DESCONECTADO,
-            CAMBIO_ESTADO_CARRERA
+            CARRERA_CERRADA,
+            CARRERA_FINALIZADA,
+            CARRERA_ABIERTA
         }
 
         private Fachada() {
@@ -120,7 +122,7 @@ public class Fachada extends Observable{
 
         public void abrirCarrera(int id) throws CarreraNoValidaException{
             sistemaJornadas.abrirCarrera(id);
-            avisar(Eventos.CAMBIO_ESTADO_CARRERA);
+            avisar(Eventos.CARRERA_ABIERTA);
         }
 
         public Carrera buscarCarrera(int id) throws CarreraNoValidaException{
@@ -129,12 +131,12 @@ public class Fachada extends Observable{
 
         public void cerrarCarrera(int id) throws CarreraNoValidaException{
             sistemaJornadas.cerrarCarrera(id);
-            avisar(Eventos.CAMBIO_ESTADO_CARRERA);
+            avisar(Eventos.CARRERA_CERRADA);
         }
 
         public void finalizarCarrera(int id, int nroRegistroPart) throws ParticipacionNoValidaException, CarreraNoValidaException {
             sistemaJornadas.finalizarCarrera(id, nroRegistroPart); 
-            avisar(Eventos.CAMBIO_ESTADO_CARRERA);
+            avisar(Eventos.CARRERA_FINALIZADA);
         }
 
         public double getTotalApostadoPorJornada(LocalDate fechaJornada) throws JornadaNoValidaException {
@@ -199,6 +201,11 @@ public class Fachada extends Observable{
         public Participacion buscarParticipacion(int nro, int idCarrera) throws ParticipacionNoValidaException, CarreraNoValidaException {
             Carrera c = buscarCarrera(idCarrera);
             return sistemaJornadas.buscarParticipacion(nro, c);
+        }
+
+        public boolean estadoValido(int id) throws CarreraNoValidaException {
+            Carrera c = buscarCarrera(id);
+            return !c.sePuedeApostar();
         }
         
         
