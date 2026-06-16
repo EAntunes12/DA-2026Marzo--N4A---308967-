@@ -75,14 +75,9 @@
     view.handler('Modalidad', (m) => { document.getElementById('tipoApuesta').textContent = m || '-'; });
     view.handler('Dividendo actual', (d) => { 
       document.getElementById('dividendoActual').textContent = (d === -1 || d === '-1') ? 'N/A' : formatDouble(d);
-      // Parse dividend robustly (accept comma or dot)
-      if (d === -1 || d === '-1') {
-        currentDividendo = null;
-      } else {
-        const parsed = Number(String(d).replace(/,/g, '.'));
-        currentDividendo = isNaN(parsed) ? null : parsed;
-      }
-      updateMontoACobrar();
+      // Ask backend to recalculate prize for current input amount
+      const valor = Number(montoInput.value || 0);
+      dispatcher.submit('/apuestaJugador/actualizarPremio', { valorApuesta: valor });
     });
     view.handler('Monto a cobrar si es ganadora', (v) => { document.getElementById('montoACobrarDisplay').textContent = formatMoney(v); });
 
@@ -93,16 +88,13 @@
       // show formatted in debitar display and keep raw in input
       document.getElementById('montoADebitarDisplay').textContent = formatMoney(monto);
     }
-    // compute monto a cobrar locally as valor * dividendo (frontend approximation)
-    let currentDividendo = null;
-    function updateMontoACobrar(){
-      const valor = Number(montoInput.value || 0);
-      const divid = Number(currentDividendo || 0);
-      const posible = (valor && divid) ? (valor * divid) : 0;
-      document.getElementById('montoACobrarDisplay').textContent = formatMoney(posible);
-    }
 
-    montoInput.addEventListener('input', (e) => { updateMontos(e.target.value); updateMontoACobrar(); });
+    // When user changes the amount, ask the presenter to update the prize
+    montoInput.addEventListener('input', (e) => { 
+      updateMontos(e.target.value);
+      const valor = Number(e.target.value || 0);
+      dispatcher.submit('/apuestaJugador/actualizarPremio', { valorApuesta: valor });
+    });
     // initialize
     updateMontos(montoInput.value);
 

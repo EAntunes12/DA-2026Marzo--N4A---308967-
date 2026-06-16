@@ -117,7 +117,8 @@ public class PresentadorGestionarCarreraAdmin implements Observador {
         return new Command("Caballos participantes", dto.getParticipaciones());
     }
 
-    private Command datosCarrera() {
+    private Command datosCarrera() throws CarreraNoValidaException {
+        CarreraDTO carrera = CarreraDTO.from(fachada.buscarCarrera(this.carrera.getId()));
         return new Command("Datos carrera", carrera);
     }
 
@@ -129,7 +130,7 @@ public class PresentadorGestionarCarreraAdmin implements Observador {
     public void actualizar(Object evento, Observable origen) {
         try {
             if (evento == Fachada.Eventos.APUESTA_REALIZADA) {
-                Commands cmds = Commands.create(carreraNoValida(), caballosParticipantes(), datosCarrera());
+                Commands cmds = Commands.create(caballosParticipantes(), datosCarrera());
                 conexion.enviarJSON(cmds);
             }
         } catch (CarreraNoValidaException ex) {

@@ -184,10 +184,11 @@ public class Fachada extends Observable{
             return sistemaJornadas.buscarApuesta(idApuesta);
         }
 
-        public double getPremioSiEsGanadora(int idCarrera, int idApuesta) throws CarreraNoValidaException, ApuestaNoValidaException {
+        public double getPremioSiEsGanadora(int idCarrera, double valorApuesta, int nroPart, String modalidad) throws CarreraNoValidaException, ParticipacionNoValidaException, ModalidadNoValidaException {
             Carrera c = buscarCarrera(idCarrera);
-            Apuesta a = buscarApuesta(idApuesta);
-            return sistemaApuestas.getPremioSiEsGanadora(c, a);
+            Modalidad m = buscarModalidad(modalidad);
+            Participacion p = buscarParticipacion(nroPart, idCarrera);
+            return sistemaApuestas.getPremioSiEsGanadora(c, m, valorApuesta, p);
         }
 
         public boolean montoValido(double valorApuesta, String nombreCompleto) throws UsuarioInvalidoException {
@@ -207,6 +208,11 @@ public class Fachada extends Observable{
             Carrera c = buscarCarrera(id);
             return !c.sePuedeApostar();
         }
+
+        public Modalidad buscarModalidad(String mod) throws ModalidadNoValidaException {
+            return sistemaApuestas.buscarModalidad(mod);
+        }
+
         
         
         

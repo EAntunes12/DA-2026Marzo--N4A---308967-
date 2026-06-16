@@ -66,7 +66,7 @@ public class SistemaApuestas {
         return apuesta;
     }
 
-    private Modalidad buscarModalidad(String mod) throws ModalidadNoValidaException {
+    public Modalidad buscarModalidad(String mod) throws ModalidadNoValidaException {
         for(Modalidad m : this.modalidades){
             if(m.getNombre().equals(mod)){
                 return m;
@@ -75,7 +75,7 @@ public class SistemaApuestas {
         throw new ModalidadNoValidaException("No existe la modalidad");
     }
 
-    public double getPremioSiEsGanadora(Carrera c, Apuesta a) {
-        return a.getPremioSiEsganadora(c);
+    public double getPremioSiEsGanadora(Carrera c, Modalidad m, double valor, Participacion p) {
+        return m.calcularPago(valor, p.getDividendo(), c.totalApostadoPorCaballo(p));
     }
 }

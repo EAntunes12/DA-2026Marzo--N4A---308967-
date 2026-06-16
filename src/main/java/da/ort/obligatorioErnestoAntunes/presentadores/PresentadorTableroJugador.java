@@ -1,6 +1,9 @@
 package da.ort.obligatorioErnestoAntunes.presentadores;
 
 import da.ort.obligatorioErnestoAntunes.conf.ConfiguracionAppObligatorio;
+
+import java.util.List;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import da.ort.obligatorioErnestoAntunes.dto.AdminDTO;
 import da.ort.obligatorioErnestoAntunes.dto.ApuestaDTO;
+import da.ort.obligatorioErnestoAntunes.dto.ApuestaJugadorDTO;
 import da.ort.obligatorioErnestoAntunes.dto.CarreraDTO;
 import da.ort.obligatorioErnestoAntunes.dto.JugadorDTO;
 import da.ort.obligatorioErnestoAntunes.excepciones.ApuestaNoValidaException;
@@ -90,7 +94,7 @@ public class PresentadorTableroJugador implements Observador {
 
     private Command apuestasJugador() {
         return new Command("Apuestas del jugador",
-                ApuestaDTO.fromList(fachada.getApuestasPorJugador(jugadorDTO.getNombre())));
+                ApuestaJugadorDTO.fromList(fachada.getApuestasPorJugador(jugadorDTO.getNombre())));
     }
 
     private Command tiposDeApuesta() {
@@ -98,7 +102,8 @@ public class PresentadorTableroJugador implements Observador {
     }
 
     private Command carrerasDisponibles() {
-        return new Command("Carreras disponibles", CarreraDTO.fromList(fachada.getCarrerasDisponibles()));
+        List<CarreraDTO> carreras = CarreraDTO.fromList(fachada.getCarrerasDisponibles());
+        return new Command("Carreras disponibles", carreras);
     }
 
     private Command datosJugador() {
@@ -106,11 +111,13 @@ public class PresentadorTableroJugador implements Observador {
     }
 
     private Command totalApostado() {
-        return new Command("Total apostado", fachada.getTotalApostadoPorJugador(jugadorDTO.getNombreCompleto()));
+        double totalApostado = fachada.getTotalApostadoPorJugador(jugadorDTO.getNombreCompleto());
+        return new Command("Total apostado", totalApostado);
     }
 
     private Command totalGanado() {
-        return new Command("Total ganado", fachada.getTotalGanadoPorJugador(jugadorDTO.getNombreCompleto()));
+        double totalGanado = fachada.getTotalGanadoPorJugador(jugadorDTO.getNombreCompleto());
+        return new Command("Total ganado", totalGanado);
     }
 
     private Command accesoNoPermitido() {

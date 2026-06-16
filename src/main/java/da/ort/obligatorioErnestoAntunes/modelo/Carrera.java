@@ -277,7 +277,7 @@ public class Carrera {
         double total = 0;
         for(Apuesta a : this.apuestas){
             if(a.esDeJugador(nombreCompleto) && a.esGanadora(ganador)){
-                total += a.getValor();
+                total += a.calcularPremio(totalApostadoPorCaballo(ganador));
             }
         }
         return total;

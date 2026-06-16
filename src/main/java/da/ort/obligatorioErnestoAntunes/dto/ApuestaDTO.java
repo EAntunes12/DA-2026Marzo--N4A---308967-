@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import da.ort.obligatorioErnestoAntunes.estado.EstadoCarrera;
 import da.ort.obligatorioErnestoAntunes.modelo.Apuesta;
 import da.ort.obligatorioErnestoAntunes.modelo.Caballo;
 import da.ort.obligatorioErnestoAntunes.modelo.Apuesta;

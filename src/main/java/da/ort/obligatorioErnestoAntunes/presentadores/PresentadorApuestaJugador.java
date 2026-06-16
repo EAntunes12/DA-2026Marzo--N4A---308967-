@@ -105,8 +105,8 @@ public class PresentadorApuestaJugador implements Observador {
 
     @PostMapping("/actualizarPremio")
     public Commands actualizarPremio(@RequestParam double valorApuesta)
-            throws CarreraNoValidaException, ApuestaNoValidaException {
-        double posiblePremio = fachada.getPremioSiEsGanadora(carreraDTO.getId(), apuestaDTO.getId());
+            throws CarreraNoValidaException, ParticipacionNoValidaException, ModalidadNoValidaException {
+        double posiblePremio = fachada.getPremioSiEsGanadora(carreraDTO.getId(), valorApuesta, partDTO.getNroRegistro(), modalidad);
         return Commands.create(montoACobrar(posiblePremio));
     }
 
@@ -117,8 +117,7 @@ public class PresentadorApuestaJugador implements Observador {
     }
 
     private Command montoACobrar(double valorApuesta) {
-        return new Command("Monto a cobrar si es ganadora", valorApuesta); // en realidad es el monto a debitar de la
-                                                                           // cuenta :/
+        return new Command("Monto a cobrar si es ganadora", valorApuesta); //quedo mal el nombre de variable, tenfria que ser el monto a cobrar
     }
 
     private Command tipoApuesta() {

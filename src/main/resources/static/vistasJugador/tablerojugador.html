@@ -190,12 +190,12 @@
       if(apuestas.length===0){ tbody.innerHTML='<tr><td colspan="6" class="small">No hay apuestas</td></tr>'; return; }
       apuestas.forEach(a => {
         const tr = document.createElement('tr');
-        const fecha = document.createElement('td'); fecha.textContent = a.fecha || a.fechaOperacion || '-';
-        const nro = document.createElement('td'); nro.textContent = a.participacion?.numeroCarrera ?? '';
-        const caballo = document.createElement('td'); caballo.textContent = a.participacion?.caballo?.nombre || a.participacion?.caballo || '';
-        const monto = document.createElement('td'); monto.textContent = formatMoney(a.valor);
-        const tipo = document.createElement('td'); tipo.textContent = a.modalidad?.nombre || (a.modalidad?String(a.modalidad):'');
-        const estado = document.createElement('td'); estado.innerHTML = '<span class="status done">Finalizada</span>';
+        const fecha = document.createElement('td'); fecha.textContent = (a.apuesta && (a.apuesta.fecha || a.apuesta.fechaOperacion)) ? (a.apuesta.fecha || a.apuesta.fechaOperacion) : '-';
+        const nro = document.createElement('td'); nro.textContent = a.apuesta?.participacion?.numeroCarrera ?? '';
+        const caballo = document.createElement('td'); caballo.textContent = a.apuesta?.participacion?.caballo?.nombre || a.apuesta?.participacion?.caballo || '';
+        const monto = document.createElement('td'); monto.textContent = formatMoney(a.apuesta?.valor ?? a.valor);
+        const tipo = document.createElement('td'); tipo.textContent = a.apuesta?.modalidad?.nombre || (a.apuesta?.modalidad?String(a.apuesta.modalidad):'');
+        const estado = document.createElement('td'); estado.innerHTML = `<span class="status done">${a.estadoCarrera || (a.apuesta?.estadoCarrera || '')}</span>`;
         tr.appendChild(fecha); tr.appendChild(nro); tr.appendChild(caballo); tr.appendChild(monto); tr.appendChild(tipo); tr.appendChild(estado);
         tbody.appendChild(tr);
       });

@@ -6,6 +6,8 @@ import da.ort.obligatorioErnestoAntunes.modelo.Jornada;
 import da.ort.obligatorioErnestoAntunes.observer.Observable;
 import da.ort.obligatorioErnestoAntunes.observer.Observador;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -134,11 +136,13 @@ public class PresentadorTableroAdmin implements Observador{
     }
 
     private Command proximasCarreras() throws JornadaNoValidaException{
-        return new Command("Proximas carreras", CarreraDTO.fromList(fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha())));
+        List<CarreraDTO> carreras = CarreraDTO.fromList(fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha()));
+        return new Command("Proximas carreras", carreras);
     }
 
     private Command carrerasFinalizadas() throws JornadaNoValidaException{
-        return new Command("Carreras finalizadas", CarreraDTO.fromList(fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha())));
+        List<CarreraDTO> carreras = CarreraDTO.fromList(fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha()));
+        return new Command("Carreras finalizadas", carreras);
     }
 
     private Command cantProximasCarreras() throws JornadaNoValidaException{

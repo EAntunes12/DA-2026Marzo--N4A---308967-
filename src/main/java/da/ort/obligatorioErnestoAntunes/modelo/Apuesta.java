@@ -93,10 +93,5 @@ public class Apuesta {
     public boolean esDeJugador(String nombreCompleto) {
         return this.jugador.getNombreCompleto().equals(nombreCompleto);
     }
-    public double getPremioSiEsganadora(Carrera c) {
-        if(participacion.getDividendo() <= 0){
-            return valor;
-        }
-        return calcularPremio(c.totalApostadoPorCaballo(participacion));
-    }
+
 }
