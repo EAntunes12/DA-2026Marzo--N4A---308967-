@@ -189,6 +189,10 @@
     view.handler('Cantidad carreras finalizadas', v => { console.debug('cmd: Cantidad carreras finalizadas', v); document.getElementById('cantFinalizadas').textContent = v; document.getElementById('finalizadas').textContent = v; });
     view.handler('Total de carreras', v => { console.debug('cmd: Total de carreras', v); document.getElementById('totalCarreras').textContent = v; });
 
+    view.handler('Mensaje de error', (msg) => {
+      mostrarError(msg);
+    });
+
     // Jornada info
     view.handler('mostrarJornada', (j) => {
       console.debug('cmd: mostrarJornada', j);

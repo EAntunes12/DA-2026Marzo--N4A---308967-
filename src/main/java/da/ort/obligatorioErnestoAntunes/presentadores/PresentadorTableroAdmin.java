@@ -27,154 +27,162 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/tableroAdmin")
 @Scope("session")
-public class PresentadorTableroAdmin implements Observador{
+public class PresentadorTableroAdmin implements Observador {
     private Fachada fachada;
     private Jornada jornadaActual;
     private final ConexionNavegador conexion;
 
-    public PresentadorTableroAdmin(Fachada fachada, ConexionNavegador c){
+    public PresentadorTableroAdmin(Fachada fachada, ConexionNavegador c) {
         this.fachada = fachada;
         this.conexion = c;
     }
 
     @GetMapping(value = "/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter registrarSSE(@SessionAttribute(name="administrador", required=false) AdminDTO admin) {
-        if (admin == null) return null; 
+    public SseEmitter registrarSSE(@SessionAttribute(name = "administrador", required = false) AdminDTO admin) {
+        if (admin == null)
+            return null;
         conexion.conectarSSE();
         return conexion.getConexionSSE();
     }
 
     @PostMapping("/vistaConectada")
-    public Commands vistaConectada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
-        if(adminDTO != null){            
-            if(jornadaActual == null){
-                jornadaActual = fachada.obtenerJornadaActual();
-            } 
-            fachada.agregarObservador(this);
-            return Commands.create(
+    public Commands vistaConectada(@SessionAttribute(name = "administrador", required = false) AdminDTO adminDTO)
+            throws JornadaNoValidaException {
+        if (adminDTO == null)
+            return Commands.create(accesoNoPermitido());
+
+        if (jornadaActual == null) {
+            jornadaActual = fachada.obtenerJornadaActual();
+            // si aca jornadaActual fuera null se muestra el mensaje del catch
+        }
+        fachada.agregarObservador(this);
+        return Commands.create(
                 totalApostado(), totalPagado(), comisiones(), balanceJornada(),
                 cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
-                carrerasFinalizadas(), proximasCarreras(), mostrarJornada()
-            ); 
-        }
-        return Commands.create(accesoNoPermitido());
+                carrerasFinalizadas(), proximasCarreras(), mostrarJornada());
     }
 
     @PostMapping("/siguienteJornada")
-    public Commands siguienteJornada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
-        if(adminDTO != null){
+    public Commands siguienteJornada(@SessionAttribute(name = "administrador", required = false) AdminDTO adminDTO)
+            throws JornadaNoValidaException {
+        if (adminDTO != null) {
             jornadaActual = fachada.siguienteJornada(jornadaActual);
             return Commands.create(
-                totalApostado(), totalPagado(), comisiones(), balanceJornada(),
-                cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
-                carrerasFinalizadas(), proximasCarreras(), mostrarJornada()
-            );
+                    totalApostado(), totalPagado(), comisiones(), balanceJornada(),
+                    cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
+                    carrerasFinalizadas(), proximasCarreras(), mostrarJornada());
         }
         return Commands.create(accesoNoPermitido());
     }
 
     @PostMapping("/anteriorJornada")
-    public Commands anteriorJornada(@SessionAttribute(name="administrador",required=false) AdminDTO adminDTO) throws JornadaNoValidaException{
-        if(adminDTO != null){
+    public Commands anteriorJornada(@SessionAttribute(name = "administrador", required = false) AdminDTO adminDTO)
+            throws JornadaNoValidaException {
+        if (adminDTO != null) {
             jornadaActual = fachada.anteriorJornada(jornadaActual);
             return Commands.create(
-                totalApostado(), totalPagado(), comisiones(), balanceJornada(),
-                cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
-                carrerasFinalizadas(), proximasCarreras(), mostrarJornada()
-            );
+                    totalApostado(), totalPagado(), comisiones(), balanceJornada(),
+                    cantProximasCarreras(), cantCarrerasFinalizadas(), cantCarrerasJornada(),
+                    carrerasFinalizadas(), proximasCarreras(), mostrarJornada());
         }
         return Commands.create(accesoNoPermitido());
     }
 
-
     @PostMapping("/gestionarCarrera")
-    public Commands gestionarCarrera(@RequestParam int carrera, @SessionAttribute(name="administrador",required=false) AdminDTO adminDTO, HttpSession session) throws CarreraNoValidaException{
-        if(adminDTO != null){
+    public Commands gestionarCarrera(@RequestParam int carrera,
+            @SessionAttribute(name = "administrador", required = false) AdminDTO adminDTO, HttpSession session)
+            throws CarreraNoValidaException {
+        if (adminDTO != null) {
             CarreraDTO carreraDTO = CarreraDTO.from(fachada.buscarCarrera(carrera));
             session.setAttribute("carreraSeleccionada", carreraDTO);
             fachada.quitarObservador(this);
             return Commands.create(vistaGestionarCarrera());
         }
         return Commands.create(accesoNoPermitido());
-    }    
-    
+    }
+
     @PostMapping("/logout")
-    public Commands logout(HttpSession session) throws UsuarioInvalidoException{
-        fachada.logout(((AdminDTO)session.getAttribute("administrador")).getNombreCompleto());
+    public Commands logout(HttpSession session) throws UsuarioInvalidoException {
+        fachada.logout(((AdminDTO) session.getAttribute("administrador")).getNombreCompleto());
         session.invalidate();
         fachada.quitarObservador(this);
         return Commands.create(accesoNoPermitido());
     }
-    
+
     private Command vistaGestionarCarrera() {
         return new Command("Gestionar carrera", "gestionarCarrera.html");
     }
 
-    
     private Command accesoNoPermitido() {
-       return new Command("accesoNoPermitido", "loginAdmin.html");
+        return new Command("accesoNoPermitido", "loginAdmin.html");
     }
 
     private Command totalApostado() throws JornadaNoValidaException {
-        return new Command("Total apostado en la jornada", fachada.getTotalApostadoPorJornada(jornadaActual.getFecha()));
+        return new Command("Total apostado en la jornada",
+                fachada.getTotalApostadoPorJornada(jornadaActual.getFecha()));
     }
 
-    private Command totalPagado() throws JornadaNoValidaException{
+    private Command totalPagado() throws JornadaNoValidaException {
         return new Command("Total pagado en la jornada", fachada.getTotalPagadoPorJornada(jornadaActual.getFecha()));
     }
 
-    private Command balanceJornada() throws JornadaNoValidaException{
+    private Command balanceJornada() throws JornadaNoValidaException {
         return new Command("Balance de la jornada", fachada.getBalanceJornada(jornadaActual.getFecha()));
     }
 
-    private Command comisiones() throws JornadaNoValidaException{
+    private Command comisiones() throws JornadaNoValidaException {
         return new Command("Comisiones", fachada.getTotalComisionJornada(jornadaActual.getFecha()));
     }
 
-    private Command proximasCarreras() throws JornadaNoValidaException{
-        List<CarreraDTO> carreras = CarreraDTO.fromList(fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha()));
+    private Command proximasCarreras() throws JornadaNoValidaException {
+        List<CarreraDTO> carreras = CarreraDTO
+                .fromList(fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha()));
         return new Command("Proximas carreras", carreras);
     }
 
-    private Command carrerasFinalizadas() throws JornadaNoValidaException{
-        List<CarreraDTO> carreras = CarreraDTO.fromList(fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha()));
+    private Command carrerasFinalizadas() throws JornadaNoValidaException {
+        List<CarreraDTO> carreras = CarreraDTO
+                .fromList(fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha()));
         return new Command("Carreras finalizadas", carreras);
     }
 
-    private Command cantProximasCarreras() throws JornadaNoValidaException{
-        return new Command("Cantidad proximas carreras", fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha()).size());
+    private Command cantProximasCarreras() throws JornadaNoValidaException {
+        return new Command("Cantidad proximas carreras",
+                fachada.getCarrerasDisponiblesPorJornada(jornadaActual.getFecha()).size());
     }
 
-    private Command cantCarrerasFinalizadas() throws JornadaNoValidaException{
-        return new Command("Cantidad carreras finalizadas", fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha()).size());
+    private Command cantCarrerasFinalizadas() throws JornadaNoValidaException {
+        return new Command("Cantidad carreras finalizadas",
+                fachada.getCarrerasFinalizadasPorJornada(jornadaActual.getFecha()).size());
     }
 
-    private Command cantCarrerasJornada() throws JornadaNoValidaException{
+    private Command cantCarrerasJornada() throws JornadaNoValidaException {
         return new Command("Total de carreras", fachada.getCantCarrerasJornada(jornadaActual.getFecha()));
     }
 
-    private Command mostrarJornada(){
+    private Command mostrarJornada() {
         return new Command("mostrarJornada", new JornadaDTO(jornadaActual));
     }
 
+    private Command error(String msg) {
+        return new Command("Mensaje de error", msg);
+    }
 
     @Override
     public void actualizar(Object evento, Observable origen) {
-        try{
-            if(evento == Fachada.Eventos.APUESTA_REALIZADA){
+        try {
+            if (evento == Fachada.Eventos.APUESTA_REALIZADA) {
                 Commands cmds = Commands.create(
-                    totalApostado(), totalPagado(), balanceJornada(), comisiones(),
-                    proximasCarreras(), carrerasFinalizadas(), cantProximasCarreras(),
-                    cantCarrerasFinalizadas(), cantCarrerasJornada()
-                );
+                        totalApostado(), totalPagado(), balanceJornada(), comisiones(),
+                        proximasCarreras(), carrerasFinalizadas(), cantProximasCarreras(),
+                        cantCarrerasFinalizadas(), cantCarrerasJornada());
                 conexion.enviarJSON(cmds);
             }
-        }catch(JornadaNoValidaException ex){
-            ex.printStackTrace(); //habria que ver que hacer en este caso realmetne
+        } catch (JornadaNoValidaException ex) {
+            ex.printStackTrace(); // habria que ver que hacer en este caso realmetne
         }
     }
 }

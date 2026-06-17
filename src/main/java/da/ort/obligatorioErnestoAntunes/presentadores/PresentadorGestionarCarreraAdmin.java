@@ -46,18 +46,21 @@ public class PresentadorGestionarCarreraAdmin implements Observador {
     @PostMapping("/vistaConectada")
     public Commands vistaConectada(
             @SessionAttribute(name = "administrador", required = false) AdminDTO adminDTO,
-            @SessionAttribute(name = "carreraSeleccionada", required = false) CarreraDTO carreraDTO) throws CarreraNoValidaException {
+            @SessionAttribute(name = "carreraSeleccionada", required = false) CarreraDTO carreraDTO)
+            throws CarreraNoValidaException {
         if (adminDTO == null) {
             return Commands.create(accesoNoPermitido());
         }
 
-        if (carreraDTO != null) {
-            fachada.agregarObservador(this);
-            this.carrera = carreraDTO;
-
-            return Commands.create(datosCarrera(), caballosParticipantes());
+        if (carreraDTO == null) {
+            throw new CarreraNoValidaException("No hay una carrera seleccionada");
         }
-        return Commands.create(accesoNoPermitido());
+
+        fachada.agregarObservador(this);
+        this.carrera = carreraDTO;
+
+        return Commands.create(datosCarrera(), caballosParticipantes());
+
     }
 
     @PostMapping("/abrirCarrera")
@@ -124,6 +127,10 @@ public class PresentadorGestionarCarreraAdmin implements Observador {
 
     private Command accesoNoPermitido() {
         return new Command("accesoNoPermitido", "loginAdmin.html");
+    }
+
+    private Command error(String msg) {
+        return new Command("Mensaje de error", msg);
     }
 
     @Override

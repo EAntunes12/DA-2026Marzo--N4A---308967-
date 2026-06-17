@@ -30,7 +30,7 @@ public class SistemaJornadas {
         jornadas.sort((j1, j2) -> j1.getFecha().compareTo(j2.getFecha()));
     }
 
-    public Jornada obtenerJornadaActual() {
+    public Jornada obtenerJornadaActual() throws JornadaNoValidaException {
         LocalDate hoy = LocalDate.now();
         Jornada mejor = null;
 
@@ -41,6 +41,9 @@ public class SistemaJornadas {
                 }
             }
         }
+
+        if(mejor == null) throw new JornadaNoValidaException("No hay jornadas definidas en el sistema");
+
         return mejor;
     }
 

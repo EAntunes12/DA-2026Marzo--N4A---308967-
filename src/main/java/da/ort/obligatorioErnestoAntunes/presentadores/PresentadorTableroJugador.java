@@ -2,6 +2,7 @@ package da.ort.obligatorioErnestoAntunes.presentadores;
 
 import da.ort.obligatorioErnestoAntunes.conf.ConfiguracionAppObligatorio;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Scope;
@@ -103,6 +104,10 @@ public class PresentadorTableroJugador implements Observador {
 
     private Command carrerasDisponibles() {
         List<CarreraDTO> carreras = CarreraDTO.fromList(fachada.getCarrerasDisponibles());
+        if(carreras.isEmpty()){
+            return new Command("Mensaje de error", "No hay carreras disponibles");
+        }
+
         return new Command("Carreras disponibles", carreras);
     }
 

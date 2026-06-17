@@ -6,7 +6,7 @@ import da.ort.obligatorioErnestoAntunes.modelo.Carrera;
 public class Estable implements EstadoCarrera{
     @Override
     public void abrir(Carrera carrera) throws CarreraNoValidaException {
-        carrera.setEstado(new Abierta());
+        throw new CarreraNoValidaException("No se puede abrir una carrera estable");
     }
 /* 
     @Override

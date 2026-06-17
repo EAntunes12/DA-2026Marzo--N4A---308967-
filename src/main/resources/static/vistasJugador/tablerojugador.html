@@ -111,6 +111,10 @@
       });
     });
 
+    view.handler('Mensaje de error', (msg) => {
+      mostrarError(msg);
+    });
+
     view.handler('Carreras disponibles', (carreras) => {
       const grid = document.getElementById('carrerasGrid');
       grid.innerHTML = '';

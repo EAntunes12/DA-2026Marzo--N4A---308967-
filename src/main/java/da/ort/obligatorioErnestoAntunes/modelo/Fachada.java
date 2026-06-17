@@ -76,7 +76,7 @@ public class Fachada extends Observable{
             avisar(Eventos.USUARIO_DESCONECTADO);
         }
 
-        public Jornada obtenerJornadaActual() {
+        public Jornada obtenerJornadaActual() throws JornadaNoValidaException {
             return sistemaJornadas.obtenerJornadaActual();
         }
 

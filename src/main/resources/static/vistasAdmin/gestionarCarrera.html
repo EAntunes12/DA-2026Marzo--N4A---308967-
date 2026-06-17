@@ -130,15 +130,15 @@
             return String(v);
         }
 
-        function formatDouble(v){
+        function formatDouble(v) {
             if (v === null || v === undefined) return '-';
             if (v === 'N/A') return 'N/A';
             const cleaned = String(v).replace(/,/g, '.');
             const num = parseFloat(cleaned);
             if (isNaN(num)) return String(v);
             let s = num.toFixed(2);
-            s = s.replace(/\.00$/,'');
-            s = s.replace(/(\.\d)0$/,'$1');
+            s = s.replace(/\.00$/, '');
+            s = s.replace(/(\.\d)0$/, '$1');
             return s;
         }
 
@@ -239,6 +239,10 @@
             if (url) window.location.href = url;
         });
 
+        view.handler('Mensaje de error', (msg) => {
+            mostrarError(msg);
+        });
+
         // Render tabla de caballos
         function renderCaballos(lista) {
             const tbody = document.querySelector('#tablaCaballos tbody');
@@ -260,7 +264,7 @@
                 const totalApostado = p.totalApostado || 0;
                 const cantApuestas = p.cantApuestas || 0;
 
-                    tr.innerHTML = `
+                tr.innerHTML = `
           <td>${nro}</td>
           <td>${nombreCaballo}</td>
                 <td>${dividendo === 'N/A' ? 'N/A' : formatDouble(dividendo)}</td>
@@ -366,7 +370,7 @@
 
                     eventSource.onerror = (err) => {
                         console.warn('SSE error, attempting reconnect', err);
-                        try { eventSource.close(); } catch(e){}
+                        try { eventSource.close(); } catch (e) { }
                         eventSource = null;
                         reconnectAttempts++;
                         const timeout = Math.min(30000, 1000 * Math.pow(2, Math.min(reconnectAttempts, 6)));
@@ -380,11 +384,11 @@
         }
 
         window.addEventListener('beforeunload', () => {
-            try { if (eventSource) eventSource.close(); } catch(e){}
+            try { if (eventSource) eventSource.close(); } catch (e) { }
         });
 
         // open SSE in background (do not block startView)
-        setupSSE().catch(() => {});
+        setupSSE().catch(() => { });
     </script>
 </body>
 

@@ -25,7 +25,7 @@ public class Participacion {
 
     public Participacion(int numeroRegistro, Caballo c) {
         this.numeroRegistro = numeroRegistro;
-        this.dividendo = -1; // Se inicia sin un valor valido
+        this.dividendo = 0; // Se inicia sin un valor valido
         this.caballo = c;
     }
 
